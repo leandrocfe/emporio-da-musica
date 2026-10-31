@@ -1,0 +1,38 @@
+# Segredos (versionar só .env.example)
+.env
+.env.*
+!.env.example
+
+# Python / uv
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Ferramentas de teste e lint
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Banco SQLite gerado pelo seed (fonte de verdade são os CSVs em data/)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Logs de auditoria (contêm conversas reais, mesmo mascaradas)
+logs/
+*.jsonl
+
+# Chainlit: uploads e cache gerados em runtime (.chainlit/config.toml É versionado)
+.files/
+
+# Editor / SO
+.DS_Store
+.idea/
+.vscode/
+.claude/settings.local.json
