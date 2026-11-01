@@ -7,16 +7,17 @@ answer or when `max_rounds` model rounds are used up. Tool calls requested in
 that last round are answered with a `round_limit` error and never executed:
 the model would not read their results, and a tool may write (ticket 07).
 
-The turn is atomic for the Session: messages are built on a working copy and
-appended to `session.history` only when the turn completes, so an exception
-(e.g. the provider is down) never leaves a dangling user message or a tool
-call without its result in the history.
+Messages are built on a working copy and committed when the turn completes.
+Provider failure closes the turn with a friendly answer, retaining any tool
+results already produced without executing those tools again.
 """
 
 import json
 import time
 from collections.abc import Callable, Sequence
 from datetime import datetime
+
+from litellm.exceptions import Timeout as LiteLLMTimeout
 
 from emporio.clock import real_clock
 from emporio.events import Event, EventSink, NullEventSink
@@ -26,6 +27,8 @@ from emporio.session import Session
 from emporio.tools import ToolContext, ToolRegistry, ToolResult
 
 DEFAULT_MAX_ROUNDS = 5
+DEFAULT_HISTORY_TURNS = 20
+MAX_RETRIES = 2
 
 ROUND_LIMIT_FALLBACK = (
     "Desculpe, não consegui concluir sua consulta agora. Pode reformular a pergunta? "
@@ -39,6 +42,10 @@ ROUND_LIMIT_RESULT: ToolResult = {
     }
 }
 EMPTY_ANSWER_FALLBACK = "Desculpe, não entendi. Pode repetir de outro jeito?"
+LLM_FAILURE_FALLBACK = (
+    "Desculpe, não consegui responder agora. Tente novamente ou fale com a loja "
+    "pelo telefone (67) 3341-4444."
+)
 
 
 class Assistant:
@@ -50,15 +57,21 @@ class Assistant:
         clock: Callable[[], datetime] = real_clock,
         categories: Sequence[str] = (),
         max_rounds: int = DEFAULT_MAX_ROUNDS,
+        history_turns: int = DEFAULT_HISTORY_TURNS,
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         if max_rounds < 1:
             raise ValueError("max_rounds must be at least 1")
+        if history_turns < 1:
+            raise ValueError("history_turns must be at least 1")
         self._llm = llm
         self._tools = tools
         self._events = events or NullEventSink()
         self._clock = clock
         self._categories = tuple(categories)
         self._max_rounds = max_rounds
+        self._history_turns = history_turns
+        self._sleep = sleep
         self._prompt_hash = static_prompt_hash(self._categories)
 
     def reply(self, session: Session, message: str) -> str:
@@ -75,13 +88,20 @@ class Assistant:
         now = self._clock()
         ctx = ToolContext(session=session, now=now, events=self._events)
         turn: list[Message] = [{"role": "user", "content": message}]
+        with session.history_lock:
+            history = _last_turns(session.history, self._history_turns - 1)
         system = build_system_prompt(self._categories, now)
         definitions = self._tools.definitions()
 
         answer: str | None = None
         for round_number in range(1, self._max_rounds + 1):
             started = time.perf_counter()
-            response = self._llm.complete([system, *session.history, *turn], definitions)
+            try:
+                response = self._complete_with_retry([system, *history, *turn], definitions)
+            except Exception as exc:
+                self._emit("error", session, error_type=type(exc).__name__, message=str(exc))
+                answer = LLM_FAILURE_FALLBACK
+                break
             self._emit_llm_call(session, response, round_number, _elapsed_ms(started))
             if not response.tool_calls:
                 answer = response.content or EMPTY_ANSWER_FALLBACK
@@ -98,9 +118,22 @@ class Assistant:
         if answer is None:
             answer = ROUND_LIMIT_FALLBACK
         turn.append({"role": "assistant", "content": answer})
-        session.history.extend(turn)
+        with session.history_lock:
+            session.history[:] = _last_turns([*session.history, *turn], self._history_turns)
         self._emit("final_response", session, content=answer)
         return answer
+
+    def _complete_with_retry(
+        self, messages: Sequence[Message], definitions: Sequence[dict[str, object]]
+    ) -> LLMResponse:
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                return self._llm.complete(messages, definitions)
+            except Exception as exc:
+                if attempt == MAX_RETRIES or not _is_retryable(exc):
+                    raise
+                self._sleep(float(2**attempt))
+        raise AssertionError("unreachable")
 
     def _run_tools(self, response: LLMResponse, ctx: ToolContext) -> list[Message]:
         """Execute every tool call of the round, in order; one `tool` message each."""
@@ -185,3 +218,21 @@ def _tool_message(call_id: str, result: ToolResult) -> Message:
 
 def _elapsed_ms(started: float) -> int:
     return round((time.perf_counter() - started) * 1000)
+
+
+def _is_retryable(exc: Exception) -> bool:
+    status = getattr(exc, "status_code", None)
+    if isinstance(status, int):
+        return status == 429 or 500 <= status <= 599 or (
+            status == 408 and isinstance(exc, (TimeoutError, LiteLLMTimeout))
+        )
+    return isinstance(exc, (TimeoutError, LiteLLMTimeout))
+
+
+def _last_turns(history: Sequence[Message], limit: int) -> list[Message]:
+    if limit == 0:
+        return []
+    starts = [index for index, message in enumerate(history) if message["role"] == "user"]
+    if not starts:
+        return []
+    return list(history[starts[max(0, len(starts) - limit)] :])

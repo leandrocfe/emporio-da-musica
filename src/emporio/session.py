@@ -19,6 +19,7 @@ class Session:
     the UI runs each reply in a worker thread, so two messages of the same tab
     may verify at once. It is not state: left out of `repr` and equality, and a
     copy (or unpickled Session) gets a fresh lock of its own.
+    `history_lock` protects snapshots and atomic updates of conversation history.
     """
 
     id: str
@@ -27,12 +28,15 @@ class Session:
     verification_lock: threading.Lock = field(
         default_factory=threading.Lock, repr=False, compare=False
     )
+    history_lock: threading.Lock = field(default_factory=threading.Lock, repr=False, compare=False)
 
     def __getstate__(self) -> dict[str, object]:
         state = dict(self.__dict__)
         del state["verification_lock"]  # locks cannot be copied or pickled
+        del state["history_lock"]
         return state
 
     def __setstate__(self, state: dict[str, object]) -> None:
         self.__dict__.update(state)
         self.verification_lock = threading.Lock()
+        self.history_lock = threading.Lock()

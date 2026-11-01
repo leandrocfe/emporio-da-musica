@@ -6,8 +6,6 @@ from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
-import pytest
-
 from emporio.app import build_assistant
 from emporio.audit_log import JsonlEventSink
 from emporio.clock import STORE_TIMEZONE
@@ -186,17 +184,19 @@ class DownLLM:
         raise ProviderDownError("timeout falando com joao@gmail.com")
 
 
-def test_a_failed_turn_logs_an_error_event_and_still_raises(db_path: Path, tmp_path: Path) -> None:
+def test_a_failed_turn_logs_an_error_event_and_returns_fallback(
+    db_path: Path, tmp_path: Path
+) -> None:
     log = tmp_path / "audit.jsonl"
     assistant = build_assistant(
         DownLLM(), db_path, events=JsonlEventSink(log, clock=lambda: NOW), clock=lambda: NOW
     )
 
-    with pytest.raises(ProviderDownError):
-        assistant.reply(Session(id="s1"), "oi")
+    answer = assistant.reply(Session(id="s1"), "oi")
 
     lines = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    assert [line["type"] for line in lines] == ["customer_message", "error"]
+    assert "Tente novamente" in answer
+    assert [line["type"] for line in lines] == ["customer_message", "error", "final_response"]
     assert lines[1]["error_type"] == "ProviderDownError"
     assert lines[1]["message"] == "timeout falando com j***@g***.com"
 

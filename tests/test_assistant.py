@@ -1,14 +1,16 @@
 """Seam 2 — `Assistant.reply` with a scripted language model (ADR-0001)."""
 
 import json
+import threading
 from collections.abc import Callable, Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pytest
 
-from emporio.assistant import ROUND_LIMIT_FALLBACK, Assistant
+from emporio.assistant import LLM_FAILURE_FALLBACK, ROUND_LIMIT_FALLBACK, Assistant
 from emporio.llm import LLMResponse, Message
 from emporio.session import Session
 from emporio.tools import ToolContext, ToolRegistry, ToolResult
@@ -238,14 +240,122 @@ class FailingLLM:
         raise ProviderDownError
 
 
-def test_failed_turn_leaves_the_session_history_untouched() -> None:
+def test_failed_turn_returns_fallback_and_keeps_a_complete_history() -> None:
     session = Session(id="s1")
     assistant = Assistant(FailingLLM(), _echo_registry(), clock=lambda: NOW)
 
-    with pytest.raises(ProviderDownError):
-        assistant.reply(session, "oi")
+    assert assistant.reply(session, "oi") == LLM_FAILURE_FALLBACK
 
-    assert session.history == []
+    assert [m["role"] for m in session.history] == ["user", "assistant"]
+
+
+class StatusError(Exception):
+    def __init__(self, status_code: int) -> None:
+        self.status_code = status_code
+
+
+@dataclass
+class RetryLLM:
+    script: list[LLMResponse | Exception]
+    calls: int = 0
+
+    def complete(
+        self, messages: Sequence[Message], tools: Sequence[dict[str, object]]
+    ) -> LLMResponse:
+        self.calls += 1
+        result = self.script.pop(0)
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+
+@pytest.mark.parametrize("error", [TimeoutError(), StatusError(429), StatusError(500)])
+def test_retry_exhaustion_emits_error_and_returns_fallback(error: Exception) -> None:
+    llm = RetryLLM([error, error, error])
+    delays: list[float] = []
+    sink = RecordingSink()
+    assistant = Assistant(llm, _echo_registry(), events=sink, sleep=delays.append)
+
+    assert assistant.reply(Session(id="s1"), "oi") == LLM_FAILURE_FALLBACK
+    assert llm.calls == 3
+    assert delays == [1.0, 2.0]
+    assert [event.type for event in sink.events] == ["customer_message", "error", "final_response"]
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 499])
+def test_non_retryable_status_is_attempted_only_once(status: int) -> None:
+    llm = RetryLLM([StatusError(status)])
+    delays: list[float] = []
+    assistant = Assistant(llm, _echo_registry(), sleep=delays.append)
+
+    assert assistant.reply(Session(id="s1"), "oi") == LLM_FAILURE_FALLBACK
+    assert llm.calls == 1
+    assert delays == []
+
+
+def test_retry_does_not_repeat_a_tool_that_already_ran() -> None:
+    echo = EchoTool()
+    registry = ToolRegistry()
+    registry.register("echo", "Repete o texto.", ECHO_SCHEMA, echo)
+    llm = RetryLLM([
+        asks(tool_call("c1", "echo", {"text": "x"})), TimeoutError(), says("ok")
+    ])
+    assistant = Assistant(llm, registry, sleep=lambda _: None)
+
+    assert assistant.reply(Session(id="s1"), "oi") == "ok"
+    assert len(echo.received) == 1
+    assert llm.calls == 3
+
+
+def test_history_truncation_keeps_complete_tool_turns() -> None:
+    llm = ScriptedLLM([
+        asks(tool_call("c1", "echo", {"text": "x"})), says("primeira"),
+        asks(tool_call("c2", "echo", {"text": "y"})), says("segunda"),
+        says("terceira"),
+    ])
+    session = Session(id="s1")
+    assistant = Assistant(llm, _echo_registry(), history_turns=2)
+
+    assistant.reply(session, "um")
+    assistant.reply(session, "dois")
+    assistant.reply(session, "três")
+
+    sent = llm.calls[4].messages[1:]
+    assert [message["role"] for message in sent] == [
+        "user", "assistant", "tool", "assistant", "user"
+    ]
+    assert sent[0]["content"] == "dois"
+    assert sent[2]["tool_call_id"] == "c2"
+    assert session.history == [*sent[:-1], {"role": "user", "content": "três"},
+                               {"role": "assistant", "content": "terceira"}]
+
+
+def test_concurrent_replies_keep_both_complete_turns() -> None:
+    barrier = threading.Barrier(2)
+
+    class ConcurrentLLM:
+        def complete(
+            self, messages: Sequence[Message], tools: Sequence[dict[str, object]]
+        ) -> LLMResponse:
+            customer = next(str(m["content"]) for m in reversed(messages) if m["role"] == "user")
+            if messages[-1]["role"] == "user":
+                barrier.wait(timeout=5)
+                return asks(tool_call(customer, "echo", {"text": customer}))
+            return says(f"resposta {customer}")
+
+    session = Session(id="s1")
+    assistant = Assistant(ConcurrentLLM(), _echo_registry(), history_turns=2)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        answers = list(pool.map(lambda message: assistant.reply(session, message), ["um", "dois"]))
+
+    assert answers == ["resposta um", "resposta dois"]
+    assert len(session.history) == 8
+    turns = [session.history[:4], session.history[4:]]
+    assert {turn[0]["content"] for turn in turns} == {"um", "dois"}
+    for turn in turns:
+        assert [message["role"] for message in turn] == ["user", "assistant", "tool", "assistant"]
+        assert turn[2]["tool_call_id"] == turn[0]["content"]
+        assert turn[3]["content"] == f"resposta {turn[0]['content']}"
 
 
 def test_loop_events_reach_the_sink_in_order() -> None:

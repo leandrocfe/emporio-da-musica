@@ -182,3 +182,6 @@ def test_session_lock_does_not_affect_equality_repr_or_copies() -> None:
     with session.verification_lock:
         assert clone.verification_lock.acquire(blocking=False)
         clone.verification_lock.release()
+    with session.history_lock:
+        assert clone.history_lock.acquire(blocking=False)
+        clone.history_lock.release()
