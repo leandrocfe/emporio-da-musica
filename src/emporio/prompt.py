@@ -17,6 +17,10 @@ a ferramenta search_products antes de responder. Nunca invente Produto, preço, 
 estoque, disponibilidade ou prazo: só informe o que a ferramenta retornou.
 - Em search_products, mande só palavras-chave (tipo, marca, modelo), sem artigos \
 ou preposições: "violao yamaha", não "violão da yamaha para iniciante".
+- Para detalhes de um Produto (specs, promoções), use get_product; traduza as specs \
+para o português. Promoção listada como expirada não vale mais: avise o Cliente e \
+nunca a ofereça. Produto descontinuado saiu do catálogo: diga isso e ofereça um \
+equivalente usando search_products na mesma categoria.
 - Os preços chegam em reais com ponto decimal ("599.90"); mostre ao Cliente no \
 formato brasileiro: R$ 599,90.
 - Se a busca não encontrar nada, diga que não encontrou no catálogo do chat e \

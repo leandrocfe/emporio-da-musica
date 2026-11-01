@@ -4,6 +4,7 @@ Money is returned in integer cents; conversion to reais happens only at the
 tool output boundary (ADR-0002).
 """
 
+import json
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,6 +16,7 @@ from emporio.text import normalize, tokenize
 
 DEFAULT_SEARCH_LIMIT = 5
 MAX_SEARCH_LIMIT = 10
+MAX_AMBIGUOUS_MATCHES = 10
 PIX_DISCOUNT_PERCENT = 5
 LAST_UNITS_MAX_STOCK = 3
 
@@ -44,6 +46,39 @@ class ProductSummary:
 class SearchResult:
     total: int  # all matches, before applying `limit`
     products: list[ProductSummary]
+
+
+@dataclass(frozen=True, slots=True)
+class ExpiredPromotion:
+    """A Promoção no longer in force (`is_active = 0`); the Assistant must never offer it."""
+
+    discount_percent: int
+    description: str
+
+
+@dataclass(frozen=True, slots=True)
+class ProductDetail:
+    id: int
+    name: str
+    category: str
+    description: str
+    specs: dict[str, str]  # keys as in the CSV (English); the model translates
+    availability: Availability
+    # Same pricing rules as ProductSummary. Discontinued Products carry no sale
+    # prices at all (not even list_price); Em breve carries list_price only.
+    list_price: int | None = None  # cents
+    promo_price: int | None = None  # cents
+    discount_percent: int | None = None
+    pix_price: int | None = None  # cents
+    expired_promotions: tuple[ExpiredPromotion, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class AmbiguousProduct:
+    """A `name` that matched more than one Product: candidates only, no details."""
+
+    total: int  # all candidates; `matches` is capped at MAX_AMBIGUOUS_MATCHES
+    matches: list[tuple[int, str]]  # (id, name)
 
 
 class StoreService:
@@ -111,6 +146,84 @@ class StoreService:
         bands = {row["id"]: _band(row, tokens) for row in rows}
         products.sort(key=lambda p: (bands[p.id], p.effective_price, p.id))
         return SearchResult(total=len(products), products=products[:limit])
+
+    def get_product(
+        self, product_id: int | None = None, name: str | None = None
+    ) -> ProductDetail | AmbiguousProduct | None:
+        """One Product with full detail, looked up by `product_id` or by `name`.
+
+        `product_id` wins when both are given. `name` matches when every token of
+        the query is in the Product name (same normalization as the search); a
+        single exact name match beats longer names that merely contain it. Several
+        candidates give `AmbiguousProduct`; none gives `None`. Discontinued
+        Products are included (without sale prices).
+        """
+        with connect(self._db_path) as conn:
+            if product_id is not None:
+                found = _detail_row(conn, product_id)
+            else:
+                tokens = tokenize(name or "")
+                if not tokens:
+                    return None
+                rows = conn.execute("SELECT id, name FROM products ORDER BY id").fetchall()
+                names = {row["id"]: (row["name"], tokenize(row["name"])) for row in rows}
+                matches = [
+                    (pid, pname)
+                    for pid, (pname, words) in names.items()
+                    if set(tokens) <= set(words)
+                ]
+                exact = [(pid, pname) for pid, pname in matches if names[pid][1] == tokens]
+                if len(exact) == 1:
+                    matches = exact
+                if len(matches) > 1:
+                    return AmbiguousProduct(
+                        total=len(matches), matches=matches[:MAX_AMBIGUOUS_MATCHES]
+                    )
+                found = _detail_row(conn, matches[0][0]) if matches else None
+            if found is None:
+                return None
+            promo_rows = conn.execute(
+                "SELECT discount_percent, description FROM promotions "
+                "WHERE product_id = ? AND is_active = 0 ORDER BY id",
+                (found["id"],),
+            ).fetchall()
+        return _detail(
+            found, [ExpiredPromotion(r["discount_percent"], r["description"]) for r in promo_rows]
+        )
+
+
+def _detail_row(conn: sqlite3.Connection, product_id: int) -> sqlite3.Row | None:
+    row: sqlite3.Row | None = conn.execute(
+        "SELECT p.id, p.name, p.description, p.list_price, p.status, p.stock_quantity, p.specs,"
+        "  c.name AS category,"
+        "  (SELECT MAX(pr.discount_percent) FROM promotions pr"
+        "   WHERE pr.product_id = p.id AND pr.is_active = 1) AS discount_percent "
+        "FROM products p JOIN categories c ON c.id = p.category_id WHERE p.id = ?",
+        (product_id,),
+    ).fetchone()
+    return row
+
+
+def _detail(row: sqlite3.Row, expired: list[ExpiredPromotion]) -> ProductDetail:
+    summary = _summary(row)  # the one place pricing rules live
+    raw_specs: object = json.loads(row["specs"])
+    if not isinstance(raw_specs, dict):
+        raise ValueError(f"specs of product {row['id']} is not a JSON object")
+    specs = {str(key): str(value) for key, value in raw_specs.items()}
+    discontinued = summary.availability == "discontinued"
+    return ProductDetail(
+        id=summary.id,
+        name=summary.name,
+        category=summary.category,
+        description=row["description"],
+        specs=specs,
+        availability=summary.availability,
+        list_price=None if discontinued else summary.list_price,
+        promo_price=None if discontinued else summary.promo_price,
+        discount_percent=None if discontinued else summary.discount_percent,
+        pix_price=None if discontinued else summary.pix_price,
+        expired_promotions=tuple(expired),
+    )
 
 
 def _band(row: sqlite3.Row, tokens: list[str]) -> int:

@@ -10,7 +10,14 @@ string never shows up as 599.9 or 599.8999.
 from collections.abc import Mapping
 
 from emporio.money import to_brl, to_cents
-from emporio.store import DEFAULT_SEARCH_LIMIT, MAX_SEARCH_LIMIT, ProductSummary, StoreService
+from emporio.store import (
+    DEFAULT_SEARCH_LIMIT,
+    MAX_SEARCH_LIMIT,
+    AmbiguousProduct,
+    ProductDetail,
+    ProductSummary,
+    StoreService,
+)
 from emporio.text import tokenize
 from emporio.tools import ToolArgumentError, ToolContext, ToolRegistry, ToolResult
 
@@ -25,6 +32,35 @@ SEARCH_PRODUCTS_DESCRIPTION = (
     "excluem Produtos Em breve. Cada palavra da busca precisa aparecer no Produto, então "
     "envie só palavras-chave."
 )
+
+GET_PRODUCT_DESCRIPTION = (
+    "Detalhe completo de um Produto: descrição, categoria, `specs` (chaves em inglês; "
+    "traduza ao Cliente), preços e `availability`. Informe `product_id` (de uma busca "
+    "anterior) ou `name`. Preços em reais como string decimal; as regras são as de "
+    "`search_products`. Se `name` corresponder a mais de um Produto, retorna "
+    "`ambiguous: true`, `total` e `matches` (até 10, com id e nome), sem detalhes: "
+    "pergunte qual o Cliente quer. Produto inexistente retorna `found: false`. "
+    "`expired_promotions` lista "
+    "Promoções que NÃO estão mais vigentes: avise que acabaram e nunca as ofereça. "
+    "Produto descontinuado (`discontinued`) vem sem preços: diga que saiu do catálogo e "
+    "use a categoria para buscar um equivalente com `search_products`. Produto Em breve "
+    "(`coming_soon`) traz só `list_price`."
+)
+
+GET_PRODUCT_SCHEMA: dict[str, object] = {
+    "type": "object",
+    "properties": {
+        "product_id": {
+            "type": "integer",
+            "description": "ID do Produto, como retornado por `search_products`.",
+        },
+        "name": {
+            "type": "string",
+            "description": 'Nome (ou parte dele) do Produto, ex.: "Takamine GD20".',
+        },
+    },
+    "additionalProperties": False,
+}
 
 
 def _search_schema(category_names: list[str]) -> dict[str, object]:
@@ -67,7 +103,7 @@ def _search_schema(category_names: list[str]) -> dict[str, object]:
 
 
 def register_store_tools(registry: ToolRegistry, store: StoreService) -> None:
-    """Register every Store tool (later tickets add get_product, get_order...)."""
+    """Register every Store tool (later tickets add get_order...)."""
 
     def search_products(args: Mapping[str, object], ctx: ToolContext) -> ToolResult:
         query = _optional_str(args, "query")
@@ -94,6 +130,25 @@ def register_store_tools(registry: ToolRegistry, store: StoreService) -> None:
             "products": [_product_summary(product) for product in result.products],
         }
 
+    def get_product(args: Mapping[str, object], ctx: ToolContext) -> ToolResult:
+        product_id = _optional_id(args, "product_id")
+        name = _optional_str(args, "name")
+        if name is not None and not tokenize(name):
+            name = None
+        if product_id is None and name is None:
+            raise ToolArgumentError("Informe `product_id` ou `name`.")
+        found = store.get_product(product_id=product_id, name=name)
+        if found is None:
+            return {"found": False}
+        if isinstance(found, AmbiguousProduct):
+            return {
+                "ambiguous": True,
+                "total": found.total,
+                "matches": [{"id": pid, "name": pname} for pid, pname in found.matches],
+            }
+        return _product_detail(found)
+
+    registry.register("get_product", GET_PRODUCT_DESCRIPTION, GET_PRODUCT_SCHEMA, get_product)
     registry.register(
         "search_products",
         SEARCH_PRODUCTS_DESCRIPTION,
@@ -116,6 +171,39 @@ def _product_summary(product: ProductSummary) -> ToolResult:
         out["pix_price"] = to_brl(product.pix_price)
     out["availability"] = product.availability
     return out
+
+
+def _product_detail(product: ProductDetail) -> ToolResult:
+    out: ToolResult = {
+        "found": True,
+        "id": product.id,
+        "name": product.name,
+        "category": product.category,
+        "description": product.description,
+        "specs": product.specs,
+        "availability": product.availability,
+    }
+    if product.list_price is not None:
+        out["list_price"] = to_brl(product.list_price)
+    if product.promo_price is not None:
+        out["promo_price"] = to_brl(product.promo_price)
+        out["discount_percent"] = product.discount_percent
+    if product.pix_price is not None:
+        out["pix_price"] = to_brl(product.pix_price)
+    out["expired_promotions"] = [
+        {"discount_percent": promo.discount_percent, "description": promo.description}
+        for promo in product.expired_promotions
+    ]
+    return out
+
+
+def _optional_id(args: Mapping[str, object], key: str) -> int | None:
+    value = args.get(key)
+    if value is None:
+        return None
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    raise ToolArgumentError(f"`{key}` deve ser um número inteiro.")
 
 
 def _optional_str(args: Mapping[str, object], key: str) -> str | None:

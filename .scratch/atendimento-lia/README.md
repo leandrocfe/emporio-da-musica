@@ -6,8 +6,8 @@ Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`).
 |---|---|---|---|
 | 01 | [Scaffold do projeto e busca textual](issues/01-scaffold-e-busca-textual.md) | architect | done — 715ae22 |
 | 02 | [Lia responde no chat buscando Produtos](issues/02-lia-responde-no-chat.md) | architect | done — a2889d9 |
-| 03 | [Preço e Disponibilidade corretos na busca](issues/03-preco-e-disponibilidade.md) | builder | approved — aguardando commit |
-| 04 | [Detalhe do Produto](issues/04-detalhe-do-produto.md) | builder | ready-for-agent |
+| 03 | [Preço e Disponibilidade corretos na busca](issues/03-preco-e-disponibilidade.md) | builder | done — 3a0d1d7 |
+| 04 | [Detalhe do Produto](issues/04-detalhe-do-produto.md) | builder | approved — aguardando commit |
 | 05 | [Manual de políticas e situação da loja](issues/05-manual-e-situacao-da-loja.md) | builder | ready-for-agent |
 | 06 | [Consulta de Pedido com Verificação](issues/06-consulta-de-pedido.md) | architect | ready-for-agent |
 | 07 | [Registro de Reclamação](issues/07-registro-de-reclamacao.md) | builder | ready-for-agent |

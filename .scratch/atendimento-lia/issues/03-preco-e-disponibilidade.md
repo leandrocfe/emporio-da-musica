@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 — Scaffold do projeto e busca textual no catálogo
 
-**Status:** approved — aguardando commit
+**Status:** done — 3a0d1d7
 
 **Executor:** builder — regras puras e bem especificadas sobre o schema do ticket 01.
 

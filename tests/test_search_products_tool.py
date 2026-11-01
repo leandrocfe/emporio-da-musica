@@ -32,6 +32,15 @@ def search(store: StoreService, arguments: Mapping[str, object] | str) -> dict[s
     return result
 
 
+def search_definition(registry: ToolRegistry) -> dict[str, object]:
+    for definition in registry.definitions():
+        function = definition["function"]
+        assert isinstance(function, dict)
+        if function["name"] == "search_products":
+            return function
+    raise AssertionError("search_products not registered")
+
+
 def error_code(result: dict[str, object]) -> object:
     error = result.get("error")
     return error.get("code") if isinstance(error, dict) else None
@@ -112,10 +121,7 @@ def test_schema_tells_the_model_to_send_only_keywords(store: StoreService) -> No
     registry = ToolRegistry()
     register_store_tools(registry, store)
 
-    (definition,) = registry.definitions()
-    function = definition["function"]
-    assert isinstance(function, dict)
-    assert function["name"] == "search_products"
+    function = search_definition(registry)
     parameters = function["parameters"]
     assert isinstance(parameters, dict)
     assert set(parameters["properties"]) == {"query", "category", "min_price", "max_price", "limit"}
@@ -204,9 +210,10 @@ def test_schema_lists_category_names_in_enum_and_documents_price_bounds(
     registry = ToolRegistry()
     register_store_tools(registry, store)
 
-    function = registry.definitions()[0]["function"]
-    assert isinstance(function, dict)
-    properties = function["parameters"]["properties"]
+    function = search_definition(registry)
+    parameters = function["parameters"]
+    assert isinstance(parameters, dict)
+    properties = parameters["properties"]
     assert properties["category"]["enum"] == [
         "Guitarras",
         "Baixos",
