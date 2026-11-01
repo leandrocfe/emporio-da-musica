@@ -23,6 +23,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY data ./data
 COPY public ./public
 COPY .chainlit/config.toml ./.chainlit/config.toml
+COPY .chainlit/translations/pt-BR.json ./.chainlit/translations/pt-BR.json
 COPY chainlit.md docker-entrypoint.sh ./
 
 # Paths are explicit: the defaults in emporio.db assume a source checkout.

@@ -121,9 +121,9 @@ default_theme = "light"
 
 # Force a specific language for all users (e.g., "en-US", "he-IL", "fr-FR")
 # If not set, the browser's language will be used
-# Chainlit 2.12 ships pt-PT only ("pt-BR" would fall back to en-US); a pt-BR
-# translation in .chainlit/translations/ belongs to the visual identity (ticket 10).
-language = "pt-PT"
+# Chainlit 2.12 ships pt-PT only; a versioned pt-BR translation lives in
+# .chainlit/translations/pt-BR.json (Chainlit does not overwrite existing files).
+language = "pt-BR"
 
 # layout = "wide"
 

@@ -17,6 +17,6 @@ Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`).
 | 13 | [Página de exemplo da loja com a Lia](issues/13-landing-com-a-lia.md) | builder | done — c7e5e87 |
 | 11 | [Conversas de exemplo](issues/11-conversas-de-exemplo.md) | builder + humano | ready-for-human — gerador aprovado; conversas geradas; falta revisão do mantenedor |
 | 12 | [README do projeto](issues/12-readme-do-projeto.md) | builder | approved — aguardando commit |
-| 14 | [Feriados na situação da loja](issues/14-feriados-na-situacao-da-loja.md) | builder | approved — aguardando commit |
+| 14 | [Feriados na situação da loja](issues/14-feriados-na-situacao-da-loja.md) | builder | done — f41e806 |
 
 Status: `ready-for-agent` → `in-progress` → `in-review` → `approved — aguardando commit` → `done — <commit>` (commit feito manualmente pelo mantenedor).

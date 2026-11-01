@@ -11,7 +11,8 @@
 .mypy_cache
 .ruff_cache
 .files
-.chainlit/translations
+.chainlit/translations/*
+!.chainlit/translations/pt-BR.json
 .scratch
 .claude
 .DS_Store

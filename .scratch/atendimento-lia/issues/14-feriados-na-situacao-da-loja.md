@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 — Manual de políticas e situação da loja
 
-**Status:** approved — aguardando commit
+**Status:** done — f41e806
 
 **Executor:** builder
 
