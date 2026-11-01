@@ -4,6 +4,7 @@ Kept free of Chainlit so any UI (or a future HTTP API) builds the same Assistant
 """
 
 import os
+from collections.abc import Mapping
 from pathlib import Path
 
 from emporio.assistant import Assistant
@@ -32,10 +33,16 @@ def build_assistant(
     return Assistant(llm, registry, events=events, clock=clock, categories=store.category_names())
 
 
+def build_event_sink_from_env(environ: Mapping[str, str]) -> EventSink:
+    """The audit log sink; its `ts` is the real wall clock, whatever `AGENT_NOW` says."""
+    return JsonlEventSink(log_path_from_env(environ))
+
+
 def build_assistant_from_env() -> Assistant:
     """Production wiring: LiteLLM (`LLM_MODEL`) over the database at `DB_PATH`.
 
-    Events go to the masked JSONL audit log (`LOG_PATH`, or `LOG_DIR`/audit.jsonl).
+    Events go to the masked JSONL audit log (`LOG_PATH`, or `LOG_DIR`/audit.jsonl),
+    stamped with the real clock; `AGENT_NOW` drives only the Reference date.
     """
     # Imported here: litellm is slow to import and only production needs it.
     from emporio.litellm_client import LiteLLMClient
@@ -44,6 +51,6 @@ def build_assistant_from_env() -> Assistant:
     return build_assistant(
         llm=LiteLLMClient.from_env(),
         db_path=db_path_from_env(),
-        events=JsonlEventSink(log_path_from_env(os.environ), clock=clock),
+        events=build_event_sink_from_env(os.environ),
         clock=clock,
     )

@@ -216,3 +216,32 @@ button:focus-visible, textarea:focus-visible, a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   button[id^='lia-shortcut-'] { transition: none; }
 }
+
+/* Lia's loading indicator (an animated SVG sent as a Markdown image): shown inline,
+   small and aligned with its text, instead of Chainlit's full-width 16:9 media box. */
+div:has(> [data-radix-aspect-ratio-wrapper] img[src$="lia-pensando.svg"]) {
+  display: inline-block;
+  max-width: none;
+  vertical-align: middle;
+}
+
+div:has(> [data-radix-aspect-ratio-wrapper] img[src$="lia-pensando.svg"]) > [data-radix-aspect-ratio-wrapper] {
+  width: 72px !important;
+  height: 32px;
+  padding-bottom: 0 !important;
+}
+
+div:has(> [data-radix-aspect-ratio-wrapper] img[src$="lia-pensando.svg"]) .bg-muted {
+  background: transparent;
+  border-radius: 0;
+}
+
+img[src$="lia-pensando.svg"] {
+  pointer-events: none;
+  cursor: default;
+}
+
+/* Keep the notes and "Lia está pensando…" on one line in narrow bubbles. */
+*:has(> div > [data-radix-aspect-ratio-wrapper] img[src$="lia-pensando.svg"]) {
+  white-space: nowrap;
+}

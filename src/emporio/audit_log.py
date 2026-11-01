@@ -1,8 +1,9 @@
 """JSONL audit log: an `EventSink` that appends one masked JSON object per line (ticket 08).
 
 Line shape: `{"ts", "session_id", "type", ...event data}`. `ts` is ISO 8601 with
-offset, from the injected clock (the same one the Assistant uses, so `AGENT_NOW`
-pins both). Everything goes through `emporio.masking` before it is serialized;
+offset, from the sink's own clock: the real wall clock by default, never `AGENT_NOW`
+(which pins only the business Reference date), so the log keeps the real chronology.
+Tests inject a fixed clock. Everything goes through `emporio.masking` before it is serialized;
 tool results longer than `max_result_chars` (after masking) are replaced by
 `{"truncated": true, "chars": <full length>, "preview": <first chars>}`, so a
 search with many Products does not bloat the log.

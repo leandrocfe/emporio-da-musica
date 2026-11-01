@@ -21,6 +21,7 @@ from emporio.app import build_assistant_from_env
 from emporio.assistant import Assistant
 from emporio.clock import clock_from_env
 from emporio.session import Session
+from emporio.store_info import STORE_PHONE
 
 AUTHOR = "Lia"
 WELCOME = (
@@ -34,10 +35,10 @@ SHORTCUTS = {
     "Trocas e devoluções": "Quero saber sobre trocas e devoluções.",
     "Horário e endereço": "Qual é o horário de funcionamento e o endereço da loja?",
 }
-LOADING = "Lia está pensando..."
+LOADING = "![](/lia/public/lia-pensando.svg) Lia está pensando…"
 FRIENDLY_ERROR = (
     "Ops, tive um problema técnico para responder agora. Pode tentar de novo em instantes? "
-    "Se preferir, fale com a loja pelo telefone (67) 3341-4444."
+    f"Se preferir, fale com a loja pelo telefone {STORE_PHONE}."
 )
 
 logger = logging.getLogger(__name__)

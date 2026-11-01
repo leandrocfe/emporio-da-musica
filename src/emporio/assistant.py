@@ -20,10 +20,11 @@ from datetime import datetime
 from litellm.exceptions import Timeout as LiteLLMTimeout
 
 from emporio.clock import real_clock
-from emporio.events import Event, EventSink, NullEventSink
+from emporio.events import Event, EventSink, EventType, NullEventSink
 from emporio.llm import LLMClient, LLMResponse, Message
 from emporio.prompt import PROMPT_VERSION, build_system_prompt, static_prompt_hash
 from emporio.session import Session
+from emporio.store_info import STORE_PHONE
 from emporio.tools import ToolContext, ToolRegistry, ToolResult
 
 DEFAULT_MAX_ROUNDS = 5
@@ -32,7 +33,7 @@ MAX_RETRIES = 2
 
 ROUND_LIMIT_FALLBACK = (
     "Desculpe, não consegui concluir sua consulta agora. Pode reformular a pergunta? "
-    "Se preferir, fale com a loja pelo telefone (67) 3341-4444."
+    f"Se preferir, fale com a loja pelo telefone {STORE_PHONE}."
 )
 # Synthetic answer for tool calls of the last allowed round (never executed).
 ROUND_LIMIT_RESULT: ToolResult = {
@@ -44,7 +45,7 @@ ROUND_LIMIT_RESULT: ToolResult = {
 EMPTY_ANSWER_FALLBACK = "Desculpe, não entendi. Pode repetir de outro jeito?"
 LLM_FAILURE_FALLBACK = (
     "Desculpe, não consegui responder agora. Tente novamente ou fale com a loja "
-    "pelo telefone (67) 3341-4444."
+    f"pelo telefone {STORE_PHONE}."
 )
 
 
@@ -81,7 +82,7 @@ class Assistant:
             return self._run_turn(session, message)
         except Exception as exc:
             # Audit only; the caller still decides what the Customer sees.
-            self._emit("error", session, error_type=type(exc).__name__, message=str(exc))
+            self._emit_error(session, exc)
             raise
 
     def _run_turn(self, session: Session, message: str) -> str:
@@ -99,7 +100,7 @@ class Assistant:
             try:
                 response = self._complete_with_retry([system, *history, *turn], definitions)
             except Exception as exc:
-                self._emit("error", session, error_type=type(exc).__name__, message=str(exc))
+                self._emit_error(session, exc)
                 answer = LLM_FAILURE_FALLBACK
                 break
             self._emit_llm_call(session, response, round_number, _elapsed_ms(started))
@@ -189,7 +190,10 @@ class Assistant:
             tool_calls=[call.name for call in response.tool_calls],
         )
 
-    def _emit(self, event_type: str, session: Session, **data: object) -> None:
+    def _emit_error(self, session: Session, exc: Exception) -> None:
+        self._emit("error", session, error_type=type(exc).__name__, message=str(exc))
+
+    def _emit(self, event_type: EventType, session: Session, **data: object) -> None:
         self._events.emit(Event(type=event_type, session_id=session.id, data=data))
 
 
