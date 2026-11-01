@@ -255,3 +255,15 @@ def test_cache_tokens_reported_by_the_provider_reach_the_usage() -> None:
     ).complete([{"role": "user", "content": "oi"}], TOOLS)
 
     assert result.usage == TokenUsage(1200, 30, cache_read_tokens=1000, cache_creation_tokens=150)
+
+
+def test_temperature_is_sent_only_when_configured() -> None:
+    fake = FakeCompletion(model_response({"role": "assistant", "content": "Oi!"}))
+    messages: list[dict[str, object]] = [{"role": "user", "content": "oi"}]
+
+    LiteLLMClient(model="m/x", completion=fake).complete(messages, TOOLS)
+    LiteLLMClient(model="m/x", temperature=0.0, completion=fake).complete(messages, TOOLS)
+
+    default, pinned = fake.kwargs
+    assert "temperature" not in default
+    assert pinned["temperature"] == 0.0

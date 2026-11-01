@@ -31,24 +31,32 @@ class LiteLLMClient:
         self,
         model: str = DEFAULT_MODEL,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
+        temperature: float | None = None,
         completion: Completion = litellm.completion,
         supports_caching: SupportsCaching = supports_prompt_caching,
     ) -> None:
         self.model = model
         self.timeout = timeout
+        self.temperature = temperature
         self._completion = completion
         self._supports_caching = supports_caching
 
     @classmethod
-    def from_env(cls) -> "LiteLLMClient":
-        """`LLM_MODEL` and `LLM_TIMEOUT_SECONDS`, with the defaults above."""
+    def from_env(cls, temperature: float | None = None) -> "LiteLLMClient":
+        """`LLM_MODEL` and `LLM_TIMEOUT_SECONDS`, with the defaults above.
+
+        `temperature` is only sent when set (the provider default otherwise).
+        """
         model = os.environ.get("LLM_MODEL") or DEFAULT_MODEL
         timeout = float(os.environ.get("LLM_TIMEOUT_SECONDS") or DEFAULT_TIMEOUT_SECONDS)
-        return cls(model=model, timeout=timeout)
+        return cls(model=model, timeout=timeout, temperature=temperature)
 
     def complete(
         self, messages: Sequence[Message], tools: Sequence[dict[str, object]]
     ) -> LLMResponse:
+        options: dict[str, object] = {}
+        if self.temperature is not None:
+            options["temperature"] = self.temperature
         response = self._completion(
             model=self.model,
             messages=self._prepare(messages),
@@ -63,6 +71,7 @@ class LiteLLMClient:
             # tests/test_litellm_client.py guard it; drop both once litellm and Chainlit
             # agree on an mcp major version.
             _skip_mcp_handler=True,
+            **options,
         )
         if not isinstance(response, ModelResponse):
             raise TypeError(f"unexpected LiteLLM response: {type(response).__name__}")

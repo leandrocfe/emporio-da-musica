@@ -223,8 +223,10 @@ def _elapsed_ms(started: float) -> int:
 def _is_retryable(exc: Exception) -> bool:
     status = getattr(exc, "status_code", None)
     if isinstance(status, int):
-        return status == 429 or 500 <= status <= 599 or (
-            status == 408 and isinstance(exc, (TimeoutError, LiteLLMTimeout))
+        return (
+            status == 429
+            or 500 <= status <= 599
+            or (status == 408 and isinstance(exc, (TimeoutError, LiteLLMTimeout)))
         )
     return isinstance(exc, (TimeoutError, LiteLLMTimeout))
 
