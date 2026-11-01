@@ -18,3 +18,7 @@
 - [ ] Única ferramenta com escrita; demais seguem somente leitura
 - [ ] Ferramenta registrada no Assistente
 - [ ] Testes: Reclamação gravada e recuperável com Protocolo; Protocolo único em N registros; mesma Sessão + descrição → mesmo Protocolo; sobrevive a novo seed
+
+## Comments
+
+**Da revisão do ticket 05 (2026-11-01):** a seção 7.3 do Manual manda "registrar a reclamação e encaminhar em até 24 horas úteis". O ticket 05 incluiu uma regra genérica no prompt: nunca afirmar que registrou ou encaminhou algo sem ferramenta. Este ticket deve acrescentar a regra explícita de usar a ferramenta de Reclamação e informar o Protocolo retornado, sem inventar Protocolo.

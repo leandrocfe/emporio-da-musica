@@ -15,17 +15,16 @@ call without its result in the history.
 
 import json
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
+from emporio.clock import real_clock
 from emporio.events import Event, EventSink, NullEventSink
 from emporio.llm import LLMClient, LLMResponse, Message
 from emporio.prompt import build_system_prompt
 from emporio.session import Session
 from emporio.tools import ToolContext, ToolRegistry, ToolResult
 
-STORE_TIMEZONE = ZoneInfo("America/Campo_Grande")
 DEFAULT_MAX_ROUNDS = 5
 
 ROUND_LIMIT_FALLBACK = (
@@ -42,18 +41,14 @@ ROUND_LIMIT_RESULT: ToolResult = {
 EMPTY_ANSWER_FALLBACK = "Desculpe, não entendi. Pode repetir de outro jeito?"
 
 
-def store_clock() -> datetime:
-    """Real clock in the store's timezone (`AGENT_NOW` override is ticket 05)."""
-    return datetime.now(STORE_TIMEZONE)
-
-
 class Assistant:
     def __init__(
         self,
         llm: LLMClient,
         tools: ToolRegistry,
         events: EventSink | None = None,
-        clock: Callable[[], datetime] = store_clock,
+        clock: Callable[[], datetime] = real_clock,
+        categories: Sequence[str] = (),
         max_rounds: int = DEFAULT_MAX_ROUNDS,
     ) -> None:
         if max_rounds < 1:
@@ -62,14 +57,16 @@ class Assistant:
         self._tools = tools
         self._events = events or NullEventSink()
         self._clock = clock
+        self._categories = tuple(categories)
         self._max_rounds = max_rounds
 
     def reply(self, session: Session, message: str) -> str:
         """Run one Customer turn and return Lia's answer."""
         self._emit("customer_message", session, content=message)
-        ctx = ToolContext(session=session, now=self._clock(), events=self._events)
+        now = self._clock()
+        ctx = ToolContext(session=session, now=now, events=self._events)
         turn: list[Message] = [{"role": "user", "content": message}]
-        system: Message = {"role": "system", "content": build_system_prompt()}
+        system = build_system_prompt(self._categories, now)
         definitions = self._tools.definitions()
 
         answer: str | None = None

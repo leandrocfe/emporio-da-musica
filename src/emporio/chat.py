@@ -6,6 +6,7 @@ to the EventSink (ticket 08).
 """
 
 import logging
+import os
 from functools import cache
 from uuid import uuid4
 
@@ -14,6 +15,7 @@ from chainlit.user_session import SessionAccessor
 
 from emporio.app import build_assistant_from_env
 from emporio.assistant import Assistant
+from emporio.clock import clock_from_env
 from emporio.session import Session
 
 AUTHOR = "Lia"
@@ -23,6 +25,10 @@ FRIENDLY_ERROR = (
 )
 
 logger = logging.getLogger(__name__)
+
+# Fail fast: an invalid AGENT_NOW stops the app at startup instead of showing the
+# Customer a generic error on every message (the warm-up below swallows exceptions).
+clock_from_env(os.environ)
 
 _session: SessionAccessor[Session | None] = cl.user_session.create_accessor("lia_session", None)
 

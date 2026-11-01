@@ -16,3 +16,7 @@
 - [ ] Tratamento de dados e suposições: contradições do manual resolvidas (incluindo troca por defeito contada da compra, "Black Friday em todo o catálogo", "mais de 300 instrumentos"); divergências preservadas (Pedidos 3 e 20, PIX sem 5% nos Pedidos, `coming_soon` em Pedido entregue, categorias vazias, e-mail duplicado, Produtos 135–144 com descrição contraditória, IDs 128 vs 130 "Kala Barítono", Promoções expiradas múltiplas nos IDs 93, 96 e 99, Pedido 8 atrasado)
 - [ ] Como auditar pelo log; links para as 5 conversas de exemplo
 - [ ] Limitações conhecidas e próximos passos (incluindo contador de Verificação do pedido zerado ao recarregar a página e ausência de métrica/alerta); uso de assistentes de código no desenvolvimento
+
+## Comments
+
+**Da revisão do ticket 05 (2026-11-01):** registrar nas suposições: WhatsApp (67) 3321-4500 da seção 7 unificado em (67) 3341-4444; "mais de 300 instrumentos" e "Sugerir lojas parceiras quando possível" (7.1) removidos do Manual em Markdown. Registrar nas limitações: com `LLM_MODEL=gemini/*`, o LiteLLM traduz `cache_control` em context caching, que exige um mínimo de tokens; esse caminho não foi verificado. Com OpenAI, o `cache_control` é descartado pelo LiteLLM.

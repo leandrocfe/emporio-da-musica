@@ -13,6 +13,22 @@ from typing import Protocol
 Message = dict[str, object]
 
 
+def system_message(static: str, dynamic: str) -> Message:
+    """System message in two text blocks: a stable prefix, then a per-turn block.
+
+    The split is the contract: an adapter whose provider supports prompt caching
+    may place a cache breakpoint after the first block (ADR-0004); one that does
+    not joins both into plain text.
+    """
+    return {
+        "role": "system",
+        "content": [
+            {"type": "text", "text": static},
+            {"type": "text", "text": dynamic},
+        ],
+    }
+
+
 @dataclass(frozen=True, slots=True)
 class ToolCall:
     id: str

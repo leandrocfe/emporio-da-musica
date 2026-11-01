@@ -15,6 +15,7 @@ from collections.abc import Callable, Sequence
 import litellm
 from litellm import ModelResponse
 from litellm.types.utils import ChatCompletionMessageToolCall
+from litellm.utils import supports_prompt_caching
 
 from emporio.llm import LLMResponse, Message, TokenUsage, ToolCall
 
@@ -22,6 +23,7 @@ DEFAULT_MODEL = "anthropic/claude-sonnet-5-5"
 DEFAULT_TIMEOUT_SECONDS = 30.0
 
 Completion = Callable[..., object]
+SupportsCaching = Callable[[str], bool]
 
 
 class LiteLLMClient:
@@ -30,10 +32,12 @@ class LiteLLMClient:
         model: str = DEFAULT_MODEL,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
         completion: Completion = litellm.completion,
+        supports_caching: SupportsCaching = supports_prompt_caching,
     ) -> None:
         self.model = model
         self.timeout = timeout
         self._completion = completion
+        self._supports_caching = supports_caching
 
     @classmethod
     def from_env(cls) -> "LiteLLMClient":
@@ -47,7 +51,7 @@ class LiteLLMClient:
     ) -> LLMResponse:
         response = self._completion(
             model=self.model,
-            messages=list(messages),
+            messages=self._prepare(messages),
             tools=list(tools) or None,
             timeout=self.timeout,
             num_retries=0,
@@ -63,6 +67,31 @@ class LiteLLMClient:
         if not isinstance(response, ModelResponse):
             raise TypeError(f"unexpected LiteLLM response: {type(response).__name__}")
         return _to_llm_response(response)
+
+    def _prepare(self, messages: Sequence[Message]) -> list[Message]:
+        """Render the two-block system message for this provider (ADR-0004)."""
+        return _render_system(messages, cache=self._supports_caching(self.model))
+
+
+def _render_system(messages: Sequence[Message], cache: bool) -> list[Message]:
+    """Cache breakpoint after the static block, or plain text if caching is unsupported.
+
+    Only a system message in the `system_message()` shape (a list of text blocks) is
+    touched; anything else passes through unchanged.
+    """
+    rendered: list[Message] = []
+    for message in messages:
+        content = message.get("content")
+        if message.get("role") != "system" or not isinstance(content, list) or not content:
+            rendered.append(message)
+        elif cache:
+            first, *rest = content
+            marked = {**first, "cache_control": {"type": "ephemeral"}}
+            rendered.append({**message, "content": [marked, *rest]})
+        else:
+            text = "\n\n".join(str(block["text"]) for block in content)
+            rendered.append({**message, "content": text})
+    return rendered
 
 
 def _to_llm_response(response: ModelResponse) -> LLMResponse:

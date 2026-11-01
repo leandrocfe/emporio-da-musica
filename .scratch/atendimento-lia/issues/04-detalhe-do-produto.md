@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos; 03 — Preço e Disponibilidade corretos na busca
 
-**Status:** approved — aguardando commit
+**Status:** done — b8b45f0
 
 **Executor:** builder — ferramenta de leitura com contrato conhecido.
 

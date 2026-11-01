@@ -1,7 +1,7 @@
 """Seam 2 — `Assistant.reply` with a scripted language model (ADR-0001)."""
 
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -305,3 +305,41 @@ def test_tool_calls_of_the_last_allowed_round_are_answered_but_not_executed() ->
     }
     assert set(unanswered) == {"call_2", "call_3"}
     assert all(r["error"]["code"] == "round_limit" for r in unanswered.values())
+
+
+def fixed_clock(moment: datetime) -> Callable[[], datetime]:
+    return lambda: moment
+
+
+def system_blocks(llm: ScriptedLLM) -> list[dict[str, str]]:
+    content = llm.calls[0].messages[0]["content"]
+    assert isinstance(content, list)
+    return content
+
+
+def test_static_prefix_is_stable_across_reference_dates_and_dynamic_block_follows() -> None:
+    sent: list[list[dict[str, str]]] = []
+    for moment in (NOW, NOW.replace(day=22, hour=15)):  # Monday 10h, Sunday 15h
+        llm = ScriptedLLM([says("ok")])
+        registry = ToolRegistry()
+        Assistant(llm, registry, clock=fixed_clock(moment), categories=["Violões"]).reply(
+            Session(id="s1"), "oi"
+        )
+        sent.append(system_blocks(llm))
+
+    (monday_static, monday_dynamic), (sunday_static, sunday_dynamic) = sent
+    assert monday_static == sunday_static
+    assert "Violões" in monday_static["text"]
+    assert "ABERTA" in monday_dynamic["text"]
+    assert "FECHADA" in sunday_dynamic["text"]
+    assert "Situação da loja" not in monday_static["text"]
+
+
+def test_prompt_and_tools_share_the_same_reference_date() -> None:
+    echo = EchoTool()
+    llm = ScriptedLLM([asks(tool_call("call_1", "echo", {"text": "x"})), says("ok")])
+
+    make_assistant(llm, echo).reply(Session(id="s1"), "oi")
+
+    assert f"{NOW:%Y-%m-%d %H:%M}" in system_blocks(llm)[1]["text"]
+    assert echo.received[0][1].now == NOW

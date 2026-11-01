@@ -12,7 +12,7 @@ from litellm.types.utils import (
 )
 
 from emporio.litellm_client import DEFAULT_MODEL, DEFAULT_TIMEOUT_SECONDS, LiteLLMClient
-from emporio.llm import LLMResponse, TokenUsage, ToolCall
+from emporio.llm import LLMResponse, TokenUsage, ToolCall, system_message
 
 TOOLS: list[dict[str, object]] = [
     {
@@ -185,3 +185,51 @@ def test_unexpected_tool_call_type_fails_loudly() -> None:
 
     with pytest.raises(TypeError, match="ChatCompletionMessageCustomToolCall"):
         client.complete([{"role": "user", "content": "oi"}], TOOLS)
+
+
+def test_system_gets_a_cache_breakpoint_after_the_static_block_when_supported() -> None:
+    fake = FakeCompletion(model_response({"role": "assistant", "content": "Oi!"}))
+    client = LiteLLMClient(model="m", completion=fake, supports_caching=lambda _model: True)
+
+    client.complete([system_message("PREFIXO", "DINAMICO"), {"role": "user", "content": "oi"}], [])
+
+    (sent,) = fake.kwargs
+    messages = sent["messages"]
+    assert isinstance(messages, list)
+    assert messages[0]["content"] == [
+        {"type": "text", "text": "PREFIXO", "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": "DINAMICO"},
+    ]
+    assert messages[1] == {"role": "user", "content": "oi"}
+
+
+def test_system_is_plain_text_without_cache_control_when_unsupported() -> None:
+    fake = FakeCompletion(model_response({"role": "assistant", "content": "Oi!"}))
+    client = LiteLLMClient(model="m", completion=fake, supports_caching=lambda _model: False)
+
+    client.complete([system_message("PREFIXO", "DINAMICO")], [])
+
+    (sent,) = fake.kwargs
+    assert sent["messages"] == [{"role": "system", "content": "PREFIXO\n\nDINAMICO"}]
+
+
+def test_caching_support_is_asked_for_the_configured_model() -> None:
+    asked: list[str] = []
+
+    def supports(model: str) -> bool:
+        asked.append(model)
+        return False
+
+    fake = FakeCompletion(model_response({"role": "assistant", "content": "Oi!"}))
+    LiteLLMClient(model="gemini/x", completion=fake, supports_caching=supports).complete(
+        [system_message("a", "b")], []
+    )
+
+    assert asked == ["gemini/x"]
+
+
+def test_real_litellm_knows_prompt_caching_support_offline() -> None:
+    assert LiteLLMClient(model="anthropic/claude-sonnet-5-5")._supports_caching(
+        "anthropic/claude-sonnet-5-5"
+    )
+    assert LiteLLMClient(model="bogus/model")._supports_caching("bogus/model") is False
