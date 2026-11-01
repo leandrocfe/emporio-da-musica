@@ -1,8 +1,9 @@
 """`EventSink` port: what happened inside the Assistant loop (ADR-0001).
 
-The default sink discards everything; the JSONL audit log (ticket 08) is
-another implementation. Event types: `customer_message`, `llm_call`,
-`tool_call`, `final_response` (and `error`, emitted from ticket 09 on).
+The default sink discards everything; the masked JSONL audit log
+(`emporio.audit_log`) is the production implementation. Event types:
+`customer_message`, `llm_call`, `tool_call`, `final_response` and `error`.
+Payloads may carry personal data: masking is the sink's job, not the emitter's.
 """
 
 from collections.abc import Mapping

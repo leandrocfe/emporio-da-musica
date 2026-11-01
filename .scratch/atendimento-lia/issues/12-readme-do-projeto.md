@@ -27,3 +27,14 @@
 - o bloqueio começa na 4ª tentativa, como diz o ADR-0003, o que custa ao Cliente uma volta a mais.
 
 **Do teste manual do ticket 06 (2026-11-01):** o README deve dizer que, depois de atualizar o código ou o `.env`, é preciso rodar `docker compose up --build`. Sem `--build` o container antigo continua rodando a versão anterior: no teste, a Lia do ticket 02 recusou consultar Pedidos.
+
+**Da revisão do ticket 08 (2026-11-01):** registrar nas Limitações do log de auditoria:
+- as respostas da Lia (`final_response`) contêm o primeiro nome do Cliente verificado e, em Reclamações, o nome informado;
+- nomes digitados em texto livre não são mascarados;
+- e-mails e telefones são mascarados em todo o log, e o telefone público da loja é preservado;
+- no Linux, `./logs` criado pelo Docker como root impede a escrita; contorno: `mkdir -p logs && sudo chown 10001 logs`;
+- não há métrica nem alerta: o JSONL é a trilha de auditoria (ADR-0004).
+- números estrangeiros não são mascarados;
+- telefone colado a palavra que já contém dígito (`pedido7fone6799…`) não é mascarado;
+- o telefone público da loja só é preservado com DDD 67 ou sem DDD;
+- em texto livre, alguns códigos são mascarados a mais (`YMH12345678`), porque mascarar a mais é falha segura.

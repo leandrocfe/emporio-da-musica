@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** approved — aguardando commit
+**Status:** done — 3d35567
 
 **Executor:** builder — escrita simples sobre a tabela criada no ticket 01.
 

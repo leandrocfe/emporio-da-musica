@@ -9,9 +9,13 @@ services:
       # Fixed here so a stray value in .env cannot point the database at the CSVs.
       DATA_DIR: /app/data
       DB_PATH: /app/var/emporio.db
+      # Fixed here too: the host folder ./logs is mounted at this path.
+      LOG_PATH: /app/logs/audit.jsonl
     volumes:
       # SQLite in its own directory; complaints (ticket 07) survive restarts.
       - emporio-db:/app/var
+      # Audit log (masked JSONL) readable on the host at ./logs/audit.jsonl.
+      - ./logs:/app/logs
     restart: unless-stopped
 
 volumes:

@@ -4,16 +4,16 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** ready-for-agent
+**Status:** approved — aguardando commit
 
 **Executor:** builder — implementação de `EventSink` e mascaramento sobre seam pronto.
 
 **Gates:** Assíncrono/integrações (logging seguro, sem PII; métrica/alerta inexistente registrada como limitação). Ordem de execução: 08 de 12. ADRs: 0001, 0004.
 
-- [ ] JSON Lines, um evento por linha, com `session_id` e timestamp
-- [ ] Eventos: mensagem do Cliente; chamada de LLM (modelo, latência, tokens); chamada de ferramenta (nome, argumentos, duração, sucesso/erro, resumo do resultado); resposta final; erro
-- [ ] E-mails e telefones mascarados em todo conteúdo registrado (argumentos, resultados, mensagens), aplicado antes da escrita, inclusive dentro de JSON aninhado
-- [ ] System prompt registrado por hash/versão, não por inteiro
-- [ ] Nome do Cliente: decisão documentada (mascarado ou registrado como limitação)
-- [ ] Diretório de logs montado como volume no host via Docker Compose
-- [ ] Testes com LLM falso: eventos gravados na ordem esperada (mensagem do Cliente → LLM → ferramenta → LLM → resposta final); e-mail e telefone mascarados em argumentos e resultados
+- [x] JSON Lines, um evento por linha, com `session_id` e timestamp
+- [x] Eventos: mensagem do Cliente; chamada de LLM (modelo, latência, tokens); chamada de ferramenta (nome, argumentos, duração, sucesso/erro, resumo do resultado); resposta final; erro
+- [x] E-mails e telefones mascarados em todo conteúdo registrado (argumentos, resultados, mensagens), aplicado antes da escrita, inclusive dentro de JSON aninhado
+- [x] System prompt registrado por hash/versão, não por inteiro
+- [x] Nome do Cliente: decisão documentada (mascarado ou registrado como limitação)
+- [x] Diretório de logs montado como volume no host via Docker Compose
+- [x] Testes com LLM falso: eventos gravados na ordem esperada (mensagem do Cliente → LLM → ferramenta → LLM → resposta final); e-mail e telefone mascarados em argumentos e resultados

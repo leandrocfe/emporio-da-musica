@@ -40,6 +40,13 @@ class ToolCall:
 class TokenUsage:
     prompt_tokens: int
     completion_tokens: int
+    # Prompt-cache accounting, when the provider reports it (else None).
+    cache_read_tokens: int | None = None
+    cache_creation_tokens: int | None = None
+
+    @property
+    def total_tokens(self) -> int:
+        return self.prompt_tokens + self.completion_tokens
 
 
 @dataclass(frozen=True, slots=True)

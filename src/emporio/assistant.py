@@ -21,7 +21,7 @@ from datetime import datetime
 from emporio.clock import real_clock
 from emporio.events import Event, EventSink, NullEventSink
 from emporio.llm import LLMClient, LLMResponse, Message
-from emporio.prompt import build_system_prompt
+from emporio.prompt import PROMPT_VERSION, build_system_prompt, static_prompt_hash
 from emporio.session import Session
 from emporio.tools import ToolContext, ToolRegistry, ToolResult
 
@@ -59,10 +59,19 @@ class Assistant:
         self._clock = clock
         self._categories = tuple(categories)
         self._max_rounds = max_rounds
+        self._prompt_hash = static_prompt_hash(self._categories)
 
     def reply(self, session: Session, message: str) -> str:
         """Run one Customer turn and return Lia's answer."""
         self._emit("customer_message", session, content=message)
+        try:
+            return self._run_turn(session, message)
+        except Exception as exc:
+            # Audit only; the caller still decides what the Customer sees.
+            self._emit("error", session, error_type=type(exc).__name__, message=str(exc))
+            raise
+
+    def _run_turn(self, session: Session, message: str) -> str:
         now = self._clock()
         ctx = ToolContext(session=session, now=now, events=self._events)
         turn: list[Message] = [{"role": "user", "content": message}]
@@ -139,6 +148,11 @@ class Assistant:
             latency_ms=latency_ms,
             prompt_tokens=usage.prompt_tokens if usage else None,
             completion_tokens=usage.completion_tokens if usage else None,
+            total_tokens=usage.total_tokens if usage else None,
+            cache_read_tokens=usage.cache_read_tokens if usage else None,
+            cache_creation_tokens=usage.cache_creation_tokens if usage else None,
+            prompt_hash=self._prompt_hash,
+            prompt_version=PROMPT_VERSION,
             tool_calls=[call.name for call in response.tool_calls],
         )
 

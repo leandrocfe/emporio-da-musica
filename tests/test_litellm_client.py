@@ -233,3 +233,25 @@ def test_real_litellm_knows_prompt_caching_support_offline() -> None:
         "anthropic/claude-sonnet-5-5"
     )
     assert LiteLLMClient(model="bogus/model")._supports_caching("bogus/model") is False
+
+
+def test_cache_tokens_reported_by_the_provider_reach_the_usage() -> None:
+    response = ModelResponse(
+        model="claude-sonnet-5-5",
+        choices=[
+            {"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": "Oi"}}
+        ],
+        usage={
+            "prompt_tokens": 1200,
+            "completion_tokens": 30,
+            "total_tokens": 1230,
+            "cache_read_input_tokens": 1000,
+            "cache_creation_input_tokens": 150,
+        },
+    )
+
+    result = LiteLLMClient(
+        model="anthropic/claude-sonnet-5-5", completion=FakeCompletion(response)
+    ).complete([{"role": "user", "content": "oi"}], TOOLS)
+
+    assert result.usage == TokenUsage(1200, 30, cache_read_tokens=1000, cache_creation_tokens=150)

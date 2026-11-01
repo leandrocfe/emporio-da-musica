@@ -2,7 +2,7 @@
 
 One Session per browser tab, in memory (ends on reload). Tool calls are never
 shown to the Customer: no Chainlit steps are created for them; auditing goes
-to the EventSink (ticket 08).
+to the EventSink (the JSONL audit log).
 """
 
 import logging
@@ -63,10 +63,11 @@ async def on_message(message: cl.Message) -> None:
     try:
         assistant = await cl.make_async(_assistant)()  # cached; built off the event loop
         answer = await cl.make_async(assistant.reply)(session, message.content)
-    except Exception:
-        # Traceback only (no message history, no credentials); the masked JSONL
-        # audit log with the error event is ticket 08/09.
-        logger.exception("assistant reply failed (session %s)", session.id)
+    except Exception as exc:
+        # Only the exception type and the session id reach stderr/docker logs: the
+        # message may echo Customer data. The full, masked error event is already in
+        # the JSONL audit log (emitted by the Assistant).
+        logger.error("assistant reply failed (session %s): %s", session.id, type(exc).__name__)
         answer = FRIENDLY_ERROR
     # Chainlit leaves `Message.send` unannotated.
     await cl.Message(content=answer, author=AUTHOR).send()  # type: ignore[no-untyped-call]

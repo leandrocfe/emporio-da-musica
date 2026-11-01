@@ -14,7 +14,7 @@ from collections.abc import Callable, Sequence
 
 import litellm
 from litellm import ModelResponse
-from litellm.types.utils import ChatCompletionMessageToolCall
+from litellm.types.utils import ChatCompletionMessageToolCall, Usage
 from litellm.utils import supports_prompt_caching
 
 from emporio.llm import LLMResponse, Message, TokenUsage, ToolCall
@@ -101,13 +101,26 @@ def _to_llm_response(response: ModelResponse) -> LLMResponse:
     return LLMResponse(
         content=message.content,
         tool_calls=tool_calls,
-        usage=(
-            TokenUsage(prompt_tokens=usage.prompt_tokens, completion_tokens=usage.completion_tokens)
-            if usage is not None
-            else None
-        ),
+        usage=_to_token_usage(usage),
         model=response.model,
     )
+
+
+def _to_token_usage(usage: object) -> TokenUsage | None:
+    if not isinstance(usage, Usage):
+        return None
+    details = usage.prompt_tokens_details
+    return TokenUsage(
+        prompt_tokens=usage.prompt_tokens,
+        completion_tokens=usage.completion_tokens,
+        cache_read_tokens=_positive_int(details.cached_tokens if details else None),
+        cache_creation_tokens=_positive_int(getattr(details, "cache_write_tokens", None)),
+    )
+
+
+def _positive_int(value: object) -> int | None:
+    """Cache counters: absent or zero both mean "nothing reported"."""
+    return value if isinstance(value, int) and not isinstance(value, bool) and value > 0 else None
 
 
 def _to_tool_call(call: object) -> ToolCall:

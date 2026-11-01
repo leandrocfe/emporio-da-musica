@@ -31,6 +31,7 @@ COPY chainlit.md docker-entrypoint.sh ./
 ENV PATH=/app/.venv/bin:$PATH \
     DATA_DIR=/app/data \
     DB_PATH=/app/var/emporio.db \
+    LOG_PATH=/app/logs/audit.jsonl \
     LITELLM_LOCAL_MODEL_COST_MAP=True
 
 # Unprivileged user. Chainlit creates and removes /app/.files and copies its
@@ -40,9 +41,9 @@ ENV PATH=/app/.venv/bin:$PATH \
 # there (contents of src/ and data/ remain read-only); without it Chainlit
 # fails with PermissionError when it removes /app/.files on shutdown.
 RUN useradd --create-home --uid 10001 lia \
-    && mkdir -p /app/var /app/.chainlit/translations \
+    && mkdir -p /app/var /app/logs /app/.chainlit/translations \
     && chown lia:lia /app \
-    && chown -R lia:lia /app/var /app/.chainlit \
+    && chown -R lia:lia /app/var /app/logs /app/.chainlit \
     && chmod +x /app/docker-entrypoint.sh
 USER lia
 

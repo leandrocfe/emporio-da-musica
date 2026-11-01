@@ -6,12 +6,17 @@ depends on `now`, so the provider can cache it; the dynamic part comes after
 the cache breakpoint, which the LLM adapter places between the two blocks.
 """
 
+import hashlib
 from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
 from emporio.llm import Message, system_message
 from emporio.store_hours import store_status
+
+# Bump when the persona or rules change in meaning; the audit log records it next
+# to the hash of the static prefix (the hash alone also catches Manual edits).
+PROMPT_VERSION = "1"
 
 MANUAL_PATH = Path(__file__).with_name("politicas-da-loja.md")
 
@@ -119,6 +124,11 @@ def build_static_prompt(categories: Sequence[str]) -> str:
         parts.append(f"Categorias do catálogo da loja:\n{listed}\n")
     parts.append(f"MANUAL DE POLÍTICAS DA LOJA (fonte de verdade para regras):\n\n{load_manual()}")
     return "\n".join(parts)
+
+
+def static_prompt_hash(categories: Sequence[str]) -> str:
+    """Short SHA-256 of the static prefix: identifies the prompt without logging it."""
+    return hashlib.sha256(build_static_prompt(categories).encode("utf-8")).hexdigest()[:12]
 
 
 def build_dynamic_block(now: datetime) -> str:

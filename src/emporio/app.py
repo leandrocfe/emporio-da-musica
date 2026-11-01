@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 from emporio.assistant import Assistant
+from emporio.audit_log import JsonlEventSink, log_path_from_env
 from emporio.clock import Clock, clock_from_env, real_clock
 from emporio.complaint_tools import register_complaint_tools
 from emporio.complaints import ComplaintService
@@ -32,12 +33,17 @@ def build_assistant(
 
 
 def build_assistant_from_env() -> Assistant:
-    """Production wiring: LiteLLM (`LLM_MODEL`) over the database at `DB_PATH`."""
+    """Production wiring: LiteLLM (`LLM_MODEL`) over the database at `DB_PATH`.
+
+    Events go to the masked JSONL audit log (`LOG_PATH`, or `LOG_DIR`/audit.jsonl).
+    """
     # Imported here: litellm is slow to import and only production needs it.
     from emporio.litellm_client import LiteLLMClient
 
+    clock = clock_from_env(os.environ)  # invalid AGENT_NOW fails here, with a clear message
     return build_assistant(
         llm=LiteLLMClient.from_env(),
         db_path=db_path_from_env(),
-        clock=clock_from_env(os.environ),  # invalid AGENT_NOW fails here, with a clear message
+        events=JsonlEventSink(log_path_from_env(os.environ), clock=clock),
+        clock=clock,
     )
