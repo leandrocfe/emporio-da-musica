@@ -10,6 +10,7 @@ string never shows up as 599.9 or 599.8999.
 from collections.abc import Mapping
 
 from emporio.money import to_brl, to_cents
+from emporio.order_tools import register_order_tools
 from emporio.store import (
     DEFAULT_SEARCH_LIMIT,
     MAX_SEARCH_LIMIT,
@@ -103,7 +104,7 @@ def _search_schema(category_names: list[str]) -> dict[str, object]:
 
 
 def register_store_tools(registry: ToolRegistry, store: StoreService) -> None:
-    """Register every Store tool (later tickets add get_order...)."""
+    """Register every Store tool (the Store is also the Orders repository)."""
 
     def search_products(args: Mapping[str, object], ctx: ToolContext) -> ToolResult:
         query = _optional_str(args, "query")
@@ -155,6 +156,7 @@ def register_store_tools(registry: ToolRegistry, store: StoreService) -> None:
         _search_schema(store.category_names()),
         search_products,
     )
+    register_order_tools(registry, store)
 
 
 def _product_summary(product: ProductSummary) -> ToolResult:

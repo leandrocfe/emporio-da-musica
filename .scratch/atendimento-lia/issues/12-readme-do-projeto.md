@@ -20,3 +20,10 @@
 ## Comments
 
 **Da revisão do ticket 05 (2026-11-01):** registrar nas suposições: WhatsApp (67) 3321-4500 da seção 7 unificado em (67) 3341-4444; "mais de 300 instrumentos" e "Sugerir lojas parceiras quando possível" (7.1) removidos do Manual em Markdown. Registrar nas limitações: com `LLM_MODEL=gemini/*`, o LiteLLM traduz `cache_control` em context caching, que exige um mínimo de tokens; esse caminho não foi verificado. Com OpenAI, o `cache_control` é descartado pelo LiteLLM.
+
+**Da revisão do ticket 06 (2026-11-01):** registrar nas suposições que os Itens do pedido saem sem preço unitário, porque `order_items` não o grava, e que usar o preço atual do catálogo recalcularia o Pedido. Registrar nas limitações:
+- o e-mail duplicado (Clientes 11 e 43) libera o Pedido 10 para quem controla aquela caixa;
+- os casos negados fazem quantidades diferentes de consultas, o que só aparece no `duration_ms` do log de auditoria;
+- o bloqueio começa na 4ª tentativa, como diz o ADR-0003, o que custa ao Cliente uma volta a mais.
+
+**Do teste manual do ticket 06 (2026-11-01):** o README deve dizer que, depois de atualizar o código ou o `.env`, é preciso rodar `docker compose up --build`. Sem `--build` o container antigo continua rodando a versão anterior: no teste, a Lia do ticket 02 recusou consultar Pedidos.

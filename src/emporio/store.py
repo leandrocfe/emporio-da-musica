@@ -7,11 +7,13 @@ tool output boundary (ADR-0002).
 import json
 import sqlite3
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
 from emporio.db import connect
 from emporio.money import discounted
+from emporio.orders import OrderItem, OrderOwner, OrderRecord, OrderStatus
 from emporio.text import normalize, tokenize
 
 DEFAULT_SEARCH_LIMIT = 5
@@ -190,6 +192,68 @@ class StoreService:
         return _detail(
             found, [ExpiredPromotion(r["discount_percent"], r["description"]) for r in promo_rows]
         )
+
+    def find_order(self, order_id: int) -> OrderRecord | None:
+        """The Order with its owner and Itens do pedido; no verification here.
+
+        Only `verify_order` may call this (it is the `OrderRepository` port): the
+        owner's contact is loaded to be compared, never to be shown.
+        """
+        with connect(self._db_path) as conn:
+            row = conn.execute(
+                "SELECT o.id, o.order_date, o.status, o.total, o.payment_method,"
+                "  o.tracking_code, o.estimated_delivery, o.notes,"
+                "  c.name AS customer_name, c.email AS customer_email, c.phone AS customer_phone "
+                "FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.id = ?",
+                (order_id,),
+            ).fetchone()
+            if row is None:
+                return None
+            item_rows = conn.execute(
+                "SELECT i.product_id, p.name, i.quantity "
+                "FROM order_items i JOIN products p ON p.id = i.product_id "
+                "WHERE i.order_id = ? ORDER BY i.id",
+                (order_id,),
+            ).fetchall()
+        return OrderRecord(
+            id=row["id"],
+            owner=OrderOwner(
+                name=row["customer_name"],
+                email=row["customer_email"],
+                phone=row["customer_phone"],
+            ),
+            order_date=date.fromisoformat(row["order_date"]),
+            status=_order_status(row["status"]),
+            total=row["total"],
+            payment_method=row["payment_method"],
+            tracking_code=row["tracking_code"],
+            estimated_delivery=(
+                date.fromisoformat(row["estimated_delivery"]) if row["estimated_delivery"] else None
+            ),
+            notes=row["notes"],
+            items=tuple(
+                OrderItem(
+                    product_id=r["product_id"], product_name=r["name"], quantity=r["quantity"]
+                )
+                for r in item_rows
+            ),
+        )
+
+
+_ORDER_STATUSES: dict[str, OrderStatus] = {
+    "pending": "pending",
+    "confirmed": "confirmed",
+    "shipped": "shipped",
+    "delivered": "delivered",
+    "cancelled": "cancelled",
+}
+
+
+def _order_status(value: str) -> OrderStatus:
+    status = _ORDER_STATUSES.get(value)
+    if status is None:  # the schema CHECK makes this unreachable with a seeded database
+        raise ValueError(f"unknown order status: {value!r}")
+    return status
 
 
 def _detail_row(conn: sqlite3.Connection, product_id: int) -> sqlite3.Row | None:

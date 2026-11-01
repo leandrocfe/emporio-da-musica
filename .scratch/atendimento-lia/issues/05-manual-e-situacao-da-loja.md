@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** approved — aguardando commit
+**Status:** done — b275a59
 
 **Executor:** builder — Data de referência e montagem de prompt; o Markdown do Manual exige julgamento nas contradições.
 

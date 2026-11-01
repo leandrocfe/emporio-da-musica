@@ -8,8 +8,8 @@ Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`).
 | 02 | [Lia responde no chat buscando Produtos](issues/02-lia-responde-no-chat.md) | architect | done — a2889d9 |
 | 03 | [Preço e Disponibilidade corretos na busca](issues/03-preco-e-disponibilidade.md) | builder | done — 3a0d1d7 |
 | 04 | [Detalhe do Produto](issues/04-detalhe-do-produto.md) | builder | done — b8b45f0 |
-| 05 | [Manual de políticas e situação da loja](issues/05-manual-e-situacao-da-loja.md) | builder | approved — aguardando commit |
-| 06 | [Consulta de Pedido com Verificação](issues/06-consulta-de-pedido.md) | architect | ready-for-agent |
+| 05 | [Manual de políticas e situação da loja](issues/05-manual-e-situacao-da-loja.md) | builder | done — b275a59 |
+| 06 | [Consulta de Pedido com Verificação](issues/06-consulta-de-pedido.md) | architect | approved — aguardando commit |
 | 07 | [Registro de Reclamação](issues/07-registro-de-reclamacao.md) | builder | ready-for-agent |
 | 08 | [Log de auditoria JSONL](issues/08-log-de-auditoria.md) | builder | ready-for-agent |
 | 09 | [Robustez do loop](issues/09-robustez-do-loop.md) | builder | ready-for-agent |
