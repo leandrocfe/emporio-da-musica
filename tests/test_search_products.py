@@ -64,12 +64,14 @@ def test_name_hits_outrank_description_only_hits(store: StoreService) -> None:
     assert 144 not in {p.id for p in result.products}
 
 
-def test_description_hit_ranks_above_cheaper_name_only_hit(store: StoreService) -> None:
+def test_name_matches_are_ordered_by_price_not_by_description_repeats(
+    store: StoreService,
+) -> None:
     result = store.search_products("yamaha")
 
-    # Yamaha in name and description (87, 92, 114, 104, 141) beat the cheaper
-    # name-only C40 (81, R$ 599,90); ties go to the lower list price.
-    assert [p.id for p in result.products] == [87, 92, 114, 104, 141]
+    # All ten Yamaha-named Products share the band, so the cheapest come first:
+    # C40 (R$ 599,90), FG800 (87, R$ 699,90), C70 (82, R$ 849,00), ...
+    assert [p.id for p in result.products] == [81, 87, 82, 92, 114]
 
 
 def test_tokens_match_whole_words_only(store: StoreService) -> None:

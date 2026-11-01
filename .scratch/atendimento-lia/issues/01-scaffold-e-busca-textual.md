@@ -4,7 +4,7 @@
 
 **Blocked by:** Nenhum — pode começar imediatamente.
 
-**Status:** ready-for-agent
+**Status:** done — 715ae22
 
 **Executor:** architect — define schema, representação de dinheiro, layout do projeto e padrões de teste que os demais tickets copiam.
 

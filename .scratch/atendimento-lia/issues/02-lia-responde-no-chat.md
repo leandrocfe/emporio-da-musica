@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 — Scaffold do projeto e busca textual no catálogo
 
-**Status:** ready-for-agent
+**Status:** done — a2889d9
 
 **Executor:** architect — cross-layer (LLM externo, portas, registro de ferramentas, Chainlit, Docker) e contratos consumidos por 04–09.
 

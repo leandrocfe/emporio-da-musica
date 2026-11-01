@@ -19,3 +19,15 @@ def to_brl(cents: int) -> str:
     if cents < 0:
         raise ValueError(f"negative amount: {cents}")
     return f"{cents // 100}.{cents % 100:02d}"
+
+
+def discounted(cents: int, percent: int) -> int:
+    """`cents` minus `percent`%, in integer cents.
+
+    Integer-only equivalent of Decimal arithmetic with ROUND_HALF_UP (ADR-0002):
+    (599.90 minus 5%) is 569.905, which becomes 569.91.
+    """
+    if cents < 0 or not 0 <= percent <= 100:
+        raise ValueError(f"invalid discount: {percent}% of {cents}")
+    # cents * (100 - percent) / 100, rounded half up: add half the divisor before flooring.
+    return (cents * (100 - percent) + 50) // 100

@@ -14,7 +14,7 @@ Os CSVs em `data/` são a fonte de verdade do catálogo, dos Clientes e dos Pedi
 - Um único arquivo SQLite, caminho configurável por `DB_PATH` (padrão dentro de `data/`), montado como volume no Docker Compose.
 - O seed roda **só na inicialização do serviço**, antes de aceitar conexões, nunca em tempo de import. Numa única transação: apaga e recria as seis tabelas de catálogo (categorias, Produtos, promoções, Clientes, Pedidos, Itens do pedido) a partir dos CSVs e executa `CREATE TABLE IF NOT EXISTS` para Reclamações. O ticket 01 cria o schema completo e semeia todos os CSVs; tickets seguintes só leem.
 - Normalização na carga: telefone só dígitos; e-mail em minúsculas e sem espaços; `is_active` booleano; datas ISO 8601; `specs` validado como JSON; coluna de busca derivada (nome + descrição + nome da categoria) em minúsculas e sem acento.
-- **Dinheiro em centavos inteiros** em todo o domínio; nenhum `float` em valor monetário. Descontos aplicados com `Decimal` e arredondados a centavos com `ROUND_HALF_UP`. Conversão para reais só na saída das ferramentas.
+- **Dinheiro em centavos inteiros** em todo o domínio; nenhum `float` em valor monetário. Descontos arredondados a centavos com `ROUND_HALF_UP` (conversão de reais via `Decimal`; desconto percentual em aritmética inteira equivalente). Conversão para reais só na saída das ferramentas.
 - Uma conexão por operação (o Chainlit atende Sessões concorrentes); consultas sempre parametrizadas.
 
 ## Consequências
