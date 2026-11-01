@@ -170,7 +170,7 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
   - e-mail: `contato@emporiodamusica.com.br`, sem o acento que aparece por erro de digitação;
   - parcelamento: valem as faixas da seção 3.1 — até 3x com parcela mínima de R$ 50, 4x a 6x com parcela mínima de R$ 80, 7x a 12x com parcela mínima de R$ 100;
   - troca por defeito conta 30 dias da compra (seção 4.2), não do recebimento; arrependimento e garantia legal contam do recebimento (ADR-0005);
-  - "mais de 300 instrumentos" e categorias de sopro e cordas orquestrais: o catálogo do chat tem 64 Produtos; sem resultado, a Lia orienta consultar a loja pelo telefone;
+  - "mais de 300 instrumentos" e categorias de sopro e cordas orquestrais: o catálogo do chat tem 65 Produtos (2 descontinuados); sem resultado, a Lia orienta consultar a loja pelo telefone;
   - "Black Friday em todo o catálogo": só Promoção vigente no sistema é oferecida.
 - Divergências observadas e preservadas: `total_brl` difere da soma dos itens nos Pedidos 3 e 20; Pedidos pagos no PIX não refletem os 5%; Produto `coming_soon` aparece em Pedido entregue; categorias de sopro e cordas orquestrais sem Produtos; e-mail duplicado entre dois Clientes (11 e 43; sem impacto, pois a verificação é por Pedido); Produtos 135–144 com descrição que contradiz nome ou specs (ex.: "Music Man Bass 1X" descrito como Fender Jazz Bass), o que afeta a busca pela descrição; dois "Kala Barítono" distintos (ID 128 ativo, ID 130 Em breve); Produtos com mais de uma Promoção expirada (93, 96, 99); Pedido 8 enviado com Entrega prevista vencida.
 - Lojas parceiras para Acessórios não existem nos dados: a Lia não inventa indicações.

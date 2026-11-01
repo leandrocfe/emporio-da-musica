@@ -297,9 +297,7 @@ def test_retry_does_not_repeat_a_tool_that_already_ran() -> None:
     echo = EchoTool()
     registry = ToolRegistry()
     registry.register("echo", "Repete o texto.", ECHO_SCHEMA, echo)
-    llm = RetryLLM([
-        asks(tool_call("c1", "echo", {"text": "x"})), TimeoutError(), says("ok")
-    ])
+    llm = RetryLLM([asks(tool_call("c1", "echo", {"text": "x"})), TimeoutError(), says("ok")])
     assistant = Assistant(llm, registry, sleep=lambda _: None)
 
     assert assistant.reply(Session(id="s1"), "oi") == "ok"
@@ -308,11 +306,15 @@ def test_retry_does_not_repeat_a_tool_that_already_ran() -> None:
 
 
 def test_history_truncation_keeps_complete_tool_turns() -> None:
-    llm = ScriptedLLM([
-        asks(tool_call("c1", "echo", {"text": "x"})), says("primeira"),
-        asks(tool_call("c2", "echo", {"text": "y"})), says("segunda"),
-        says("terceira"),
-    ])
+    llm = ScriptedLLM(
+        [
+            asks(tool_call("c1", "echo", {"text": "x"})),
+            says("primeira"),
+            asks(tool_call("c2", "echo", {"text": "y"})),
+            says("segunda"),
+            says("terceira"),
+        ]
+    )
     session = Session(id="s1")
     assistant = Assistant(llm, _echo_registry(), history_turns=2)
 
@@ -322,12 +324,19 @@ def test_history_truncation_keeps_complete_tool_turns() -> None:
 
     sent = llm.calls[4].messages[1:]
     assert [message["role"] for message in sent] == [
-        "user", "assistant", "tool", "assistant", "user"
+        "user",
+        "assistant",
+        "tool",
+        "assistant",
+        "user",
     ]
     assert sent[0]["content"] == "dois"
     assert sent[2]["tool_call_id"] == "c2"
-    assert session.history == [*sent[:-1], {"role": "user", "content": "três"},
-                               {"role": "assistant", "content": "terceira"}]
+    assert session.history == [
+        *sent[:-1],
+        {"role": "user", "content": "três"},
+        {"role": "assistant", "content": "terceira"},
+    ]
 
 
 def test_concurrent_replies_keep_both_complete_turns() -> None:

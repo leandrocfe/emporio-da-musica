@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** ready-for-human
+**Status:** done — d150db8
 
 **Executor:** builder — política definida no ADR-0004; seams com LLM falso.
 

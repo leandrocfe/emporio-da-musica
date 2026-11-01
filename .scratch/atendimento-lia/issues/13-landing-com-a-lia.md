@@ -4,7 +4,7 @@
 
 **Blocked by:** 10 — Chat com identidade visual da loja
 
-**Status:** approved — aguardando commit
+**Status:** done — c7e5e87
 
 **Executor:** builder — servidor FastAPI fino + limpeza do HTML.
 

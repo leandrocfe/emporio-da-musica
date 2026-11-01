@@ -4,19 +4,19 @@
 
 **Blocked by:** 10 — Chat com identidade visual da loja; 11 — Gerador de conversas de exemplo + as 5 conversas; 13 — Página de exemplo da loja com a Lia
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
 **Executor:** builder — documentação com justificativas, não mecânica.
 
 **Gates:** nenhum gate de superfície. Ordem de execução: 13 de 13. ADRs: 0001–0005 (referenciados).
 
-- [ ] Como rodar: Docker (`cp .env.example .env`, informar a chave, comando único) e local com `uv`; testes sem chave/rede
-- [ ] Rotas: `/` (página de exemplo da loja, estática, com a Lia no card à direita) e `/lia` (chat em tela cheia)
-- [ ] Configuração: `LLM_MODEL`, chaves por provedor, `AGENT_NOW`, `DB_PATH`
-- [ ] Decisões justificadas, com links para os ADRs: LiteLLM + loop explícito em vez de framework/MCP; Manual inteiro no contexto em vez de RAG (com limiar em que RAG passaria a valer); ferramentas fixas em vez de agente SQL; SQLite; Chainlit; prazos de pós-venda em código
-- [ ] Tratamento de dados e suposições: contradições do manual resolvidas (incluindo troca por defeito contada da compra, "Black Friday em todo o catálogo", "mais de 300 instrumentos"); divergências preservadas (Pedidos 3 e 20, PIX sem 5% nos Pedidos, `coming_soon` em Pedido entregue, categorias vazias, e-mail duplicado, Produtos 135–144 com descrição contraditória, IDs 128 vs 130 "Kala Barítono", Promoções expiradas múltiplas nos IDs 93, 96 e 99, Pedido 8 atrasado)
+- [x] Como rodar: Docker (`cp .env.example .env`, informar a chave, comando único) e local com `uv`; testes sem chave/rede
+- [x] Rotas: `/` (página de exemplo da loja, estática, com a Lia no card à direita) e `/lia` (chat em tela cheia)
+- [x] Configuração: `LLM_MODEL`, chaves por provedor, `AGENT_NOW`, `DB_PATH`
+- [x] Decisões justificadas, com links para os ADRs: LiteLLM + loop explícito em vez de framework/MCP; Manual inteiro no contexto em vez de RAG (com limiar em que RAG passaria a valer); ferramentas fixas em vez de agente SQL; SQLite; Chainlit; prazos de pós-venda em código
+- [x] Tratamento de dados e suposições: contradições do manual resolvidas (incluindo troca por defeito contada da compra, "Black Friday em todo o catálogo", "mais de 300 instrumentos"); divergências preservadas (Pedidos 3 e 20, PIX sem 5% nos Pedidos, `coming_soon` em Pedido entregue, categorias vazias, e-mail duplicado, Produtos 135–144 com descrição contraditória, IDs 128 vs 130 "Kala Barítono", Promoções expiradas múltiplas nos IDs 93, 96 e 99, Pedido 8 atrasado)
 - [ ] Como auditar pelo log; links para as 5 conversas de exemplo
-- [ ] Limitações conhecidas e próximos passos (incluindo contador de Verificação do pedido zerado ao recarregar a página e ausência de métrica/alerta); uso de assistentes de código no desenvolvimento
+- [x] ~~Limitações conhecidas e próximos passos~~ (dispensado pelo mantenedor, ver Comments); uso de assistentes de código no desenvolvimento
 
 ## Comments
 
@@ -39,3 +39,5 @@
 - telefone colado a palavra que já contém dígito (`pedido7fone6799…`) não é mascarado;
 - o telefone público da loja só é preservado com DDD 67 ou sem DDD;
 - em texto livre, alguns códigos são mascarados a mais (`YMH12345678`), porque mascarar a mais é falha segura.
+
+**Decisão do mantenedor (2026-11-01):** o README é para quem avalia o projeto e para quem quer rodá-lo, então não expõe limitações nem próximos passos. Saíram a seção "Limitações e próximos passos" e a lista de limitações do log. Os itens de limitação dos Comments acima ficam registrados só aqui, nos tickets. O critério de limitações deste ticket fica dispensado.

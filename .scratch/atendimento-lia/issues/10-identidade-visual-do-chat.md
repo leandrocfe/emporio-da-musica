@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** approved — aguardando commit
+**Status:** done — c7e5e87
 
 **Executor:** builder — tema e atalhos do Chainlit.
 

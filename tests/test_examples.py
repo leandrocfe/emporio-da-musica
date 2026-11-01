@@ -1,4 +1,4 @@
-"""Seam 5 — the example-conversation generator, with a scripted model and no network."""
+"""Seam 5: the example-conversation generator, with a scripted model and no network."""
 
 from datetime import datetime
 from pathlib import Path

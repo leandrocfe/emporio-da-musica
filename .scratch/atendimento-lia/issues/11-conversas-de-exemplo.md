@@ -4,14 +4,26 @@
 
 **Blocked by:** 04 — Detalhe do Produto; 05 — Manual de políticas e situação da loja; 06 — Consulta de Pedido; 07 — Registro de Reclamação; 08 — Log de auditoria; 09 — Robustez do loop
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
 **Executor:** builder (código do gerador) + humano (execução contra o modelo real, com chave e custo; o agente só implementa o gerador).
 
 **Gates:** Assíncrono/integrações (LLM real); logging seguro (conversas publicadas mascaradas). Ordem de execução: 12 de 13.
 
-- [ ] Comando único regenera todas as conversas com `AGENT_NOW=2026-03-23T10:00:00-04:00` (segunda-feira logo após o último Pedido do conjunto de dados) e temperatura 0
-- [ ] Cada conversa em Markdown com as falas e o trecho do log (ferramentas escolhidas, argumentos, resultados), mascarado
-- [ ] As 5 conversas: (1) violões até R$ 1000 — busca + PIX + esgotado, com follow-up roteirizado sobre o Giannini GF-3D (13 resultados; o GF-3D fica fora dos 5 primeiros); (2) Takamine GD20 com Promoção expirada; (3) devolução do Pedido 7 com Verificação do pedido por `leticia.rocha@jmail.com` e prazos de pós-venda calculados (arrependimento vencido, garantia legal vigente); (4) Acessórios + pergunta Fora de escopo; (5) Reclamação com Protocolo
-- [ ] Teste de fumaça do gerador com LLM falso (formato do Markdown), sem rede
+- [x] Comando único regenera todas as conversas com `AGENT_NOW=2026-03-23T10:00:00-04:00` (segunda-feira logo após o último Pedido do conjunto de dados) e temperatura 0 (implementado; execução real contra o modelo pendente, a cargo do humano)
+- [x] Cada conversa em Markdown com as falas e o trecho do log (ferramentas escolhidas, argumentos, resultados), mascarado
+- [x] Roteiros das 5 conversas implementados (arquivos gerados pendentes de execução humana): (1) violões até R$ 1000 — busca + PIX + esgotado, com follow-up roteirizado sobre o Giannini GF-3D (13 resultados; o GF-3D fica fora dos 5 primeiros); (2) Takamine GD20 com Promoção expirada; (3) devolução do Pedido 7 com Verificação do pedido por `leticia.rocha@jmail.com` e prazos de pós-venda calculados (arrependimento vencido, garantia legal vigente); (4) Acessórios + pergunta Fora de escopo; (5) Reclamação com Protocolo
+- [x] Teste de fumaça do gerador com LLM falso (formato do Markdown), sem rede
 - [ ] Conversas revisadas manualmente: nenhum preço, estoque ou prazo inventado; parcelamento, se citado, conferido com as faixas da seção 3.1
+
+## Comments
+
+Gerador implementado em `src/emporio/examples.py` (roteiros como dados em `SCRIPTS`), testes em `tests/test_examples.py`. As conversas **não foram geradas**: exigem chave e custo. Para gerar (com `LLM_MODEL` e a chave do provedor no `.env`):
+
+```bash
+uv run --env-file .env python -m emporio.examples
+```
+
+Escreve `docs/conversas/*.md` (uma por roteiro, mais um `README.md` índice). Data de referência e temperatura 0 são fixas no código. Se o modelo falhar em qualquer conversa, nada é gravado. Depois de gerar, falta a revisão manual (último critério).
+
+Para a revisão manual: (a) se o modelo usar `limit` >= 10 na busca do roteiro 1, o GF-3D entra na lista e o follow-up perde o sentido de "produto fora da lista"; (b) resultados acima de `max_result_chars` aparecem como `{"truncated": true, ...}` no trecho do log (limite do log real, não defeito do gerador); (c) nomes em texto livre e o primeiro nome da Cliente nas respostas da Lia não são mascarados (limitação do `masking.py`).
