@@ -27,9 +27,10 @@ from emporio.orders import (
     verify_order,
 )
 from emporio.post_sale import PostSaleWindows, Window, post_sale_windows
+from emporio.store_info import STORE_EMAIL, STORE_PHONE
 from emporio.tools import ToolContext, ToolRegistry, ToolResult
 
-HUMAN_HANDOFF_CONTACTS = "telefone (67) 3341-4444 ou e-mail contato@emporiodamusica.com.br"
+HUMAN_HANDOFF_CONTACTS = f"telefone {STORE_PHONE} ou e-mail {STORE_EMAIL}"
 
 # One result for every denied case, identical field by field: nothing in it
 # depends on the Order, the contact or the reason.

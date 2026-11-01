@@ -39,7 +39,7 @@ EXAMPLES_NOW_ISO = "2026-03-23T10:00:00-04:00"
 EXAMPLES_NOW = parse_agent_now(EXAMPLES_NOW_ISO)
 TEMPERATURE = 0.0
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "docs" / "conversas"
-_LOGGED_IN_EXCERPT = frozenset({"tool_call", "error"})
+_EXCERPT_EVENT_TYPES = frozenset({"tool_call", "error"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -115,7 +115,7 @@ SCRIPTS: tuple[ConversationScript, ...] = (
             "descrição, registra a Reclamação e informa o Protocolo e o prazo de retorno."
         ),
         turns=(
-            "Estou muito chateado. Meu pedido atrasou e ninguém me deu retorno, "
+            "Estou muito chateada. Meu pedido atrasou e ninguém me deu retorno, "
             "quero fazer uma reclamação.",
             "Meu nome é Ana Carolina Ferreira, o e-mail é anacarol.ferreira@coldmail.com "
             "e o pedido é o 8. "
@@ -228,7 +228,7 @@ def _render(script: ConversationScript, events: list[dict[str, object]], now: da
         "",
     ]
     for number, turn in enumerate(turns, start=1):
-        excerpt = [event for event in turn if event["type"] in _LOGGED_IN_EXCERPT]
+        excerpt = [event for event in turn if event["type"] in _EXCERPT_EVENT_TYPES]
         lines += [f"### Turno {number}", ""]
         if not excerpt:
             lines += ["_Nenhuma ferramenta foi chamada neste turno._", ""]

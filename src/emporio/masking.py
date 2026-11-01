@@ -80,9 +80,13 @@ import re
 from collections.abc import Callable, Mapping
 from functools import cache
 
+from emporio.store_info import STORE_PHONE
+
 MASKED = "***"
 DEEP_MARKER = "[not logged: nested too deeply]"
-STORE_PHONES = frozenset({"6733414444", "33414444"})
+# Full number (DDD + 8 digits) and the local part, as customers write it with or without DDD.
+_STORE_DIGITS = re.sub(r"\D", "", STORE_PHONE)
+STORE_PHONES = frozenset({_STORE_DIGITS, _STORE_DIGITS[-8:]})
 
 CONTACT_KEYS = frozenset({"email_or_phone", "contact", "email", "phone"})
 NAME_KEYS = frozenset({"customer_first_name"})

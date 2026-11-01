@@ -113,14 +113,14 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
 66. Como desenvolvedor, quero fixar a Data de referência por configuração, para que conversas de exemplo e testes sejam reproduzíveis.
 67. Como desenvolvedor, quero rodar a suíte de testes sem chave de API e sem rede, para que os testes sejam rápidos, baratos e determinísticos.
 68. Como desenvolvedor, quero regenerar as conversas de exemplo com um comando contra o modelo real, para que os exemplos reflitam o comportamento atual.
-69. Como visitante do projeto rodando, quero abrir uma página de exemplo da loja com a Lia num painel ao lado, para que eu veja o Assistente no contexto de um site real; a página é estática e seus botões só levam o cursor ao campo de pergunta da Lia.
+69. Como visitante do projeto rodando, quero abrir uma página de exemplo da loja com a Lia num painel ao lado, para que eu veja o Assistente no contexto de um site real; a página é estática e seus botões levam o cursor ao campo de pergunta da Lia, já preenchido com uma pergunta de exemplo que o visitante envia se quiser.
 
 ## Implementation Decisions
 
 ### Stack e execução
 
 - Python 3.13, gerenciado com `uv` (`pyproject.toml` + lockfile). Versões de dependências travadas no lockfile.
-- Um único serviço Docker Compose sobe o chat web na porta 8000 (`docker compose up`). Configuração via `.env` a partir de `.env.example` (`cp .env.example .env`). Diretórios de logs e do banco SQLite montados como volumes no host.
+- Um único serviço Docker Compose sobe o chat web na porta 8000 (`docker compose up`). Configuração via `.env` a partir de `.env.example` (`cp .env.example .env`). O log de auditoria fica em `./logs`, montado do host; o banco SQLite fica num volume nomeado (`emporio-db`), que evita problemas de permissão no Linux.
 - Sem banco externo: SQLite local.
 
 ### Módulos

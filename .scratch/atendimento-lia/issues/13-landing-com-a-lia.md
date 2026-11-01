@@ -51,3 +51,5 @@ Ajustes feitos depois da verificação: saiu o aviso duplicado da página (o Cha
 - `chainlit run` sozinho fica sem logo e avatar, por causa do prefixo `/lia` no config. Está documentado na docstring de `chat.py`; o README fica para o ticket 12.
 - Não há `frame-ancestors`/`X-Frame-Options`. Não é regressão (o Chainlit sozinho já era assim) e o risco é baixo, porque não há login nem ação sensível sem a Verificação do pedido.
 
+
+**Decisão do mantenedor (2026-11-01):** os botões da página levam o foco ao campo da Lia e o preenchem com uma pergunta de exemplo (`data-question`); nada é enviado sem o visitante confirmar. O PRD (história 69) foi atualizado para refletir esse comportamento.

@@ -14,7 +14,6 @@ import sys
 from collections.abc import Callable
 from datetime import date
 from pathlib import Path
-from typing import Any
 
 from emporio.db import connect, data_dir_from_env, db_path_from_env, transaction
 from emporio.money import to_cents
@@ -111,7 +110,7 @@ CREATE TABLE IF NOT EXISTS complaints (
 """
 
 Row = dict[str, str]
-Record = tuple[Any, ...]
+Record = tuple[str | int | None, ...]
 
 
 def seed(db_path: Path, data_dir: Path) -> dict[str, int]:

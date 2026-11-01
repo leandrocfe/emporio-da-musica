@@ -1,7 +1,9 @@
 """Behavior at the Chainlit adapter boundary, without network or API keys."""
 
 import asyncio
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
+from xml.etree import ElementTree
 
 import chainlit as cl
 import pytest
@@ -77,3 +79,13 @@ def test_welcome_actions_have_stable_styling_hook_and_unique_ids(
     assert all(action.id.startswith("lia-shortcut-") for action in actions)
     assert len({action.id for action in actions}) == len(actions)
     sent.send.assert_awaited_once()
+
+
+def test_loading_svg_is_accessible_and_respects_reduced_motion() -> None:
+    svg = Path(__file__).parent.parent / "public" / "lia-pensando.svg"
+    root = ElementTree.parse(svg).getroot()  # noqa: S314 (repo-owned file)
+
+    assert root.find("{http://www.w3.org/2000/svg}title") is not None
+    assert root.get("role") == "img"
+    assert "prefers-reduced-motion" in svg.read_text(encoding="utf-8")
+    assert "/lia/public/lia-pensando.svg" in chat.LOADING

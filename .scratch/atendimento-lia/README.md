@@ -15,7 +15,7 @@ Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`).
 | 09 | [Robustez do loop](issues/09-robustez-do-loop.md) | builder | done — d150db8 |
 | 10 | [Identidade visual do chat](issues/10-identidade-visual-do-chat.md) | builder | done — c7e5e87 |
 | 13 | [Página de exemplo da loja com a Lia](issues/13-landing-com-a-lia.md) | builder | done — c7e5e87 |
-| 11 | [Conversas de exemplo](issues/11-conversas-de-exemplo.md) | builder + humano | ready-for-human — gerador aprovado; falta execução real + revisão manual |
-| 12 | [README do projeto](issues/12-readme-do-projeto.md) | builder | ready-for-human — aprovado; falta conferir links após gerar conversas |
+| 11 | [Conversas de exemplo](issues/11-conversas-de-exemplo.md) | builder + humano | ready-for-human — gerador aprovado; conversas geradas; falta revisão do mantenedor |
+| 12 | [README do projeto](issues/12-readme-do-projeto.md) | builder | approved — aguardando commit |
 
 Status: `ready-for-agent` → `in-progress` → `in-review` → `approved — aguardando commit` → `done — <commit>` (commit feito manualmente pelo mantenedor).

@@ -88,7 +88,6 @@ def test_static_prompt_keeps_the_rules_of_the_ticket() -> None:
 
     for snippet in (
         "`total` retornado",  # total > shown: say how many exist, offer more
-        "saxofone",  # category without Products -> phone
         "Acessórios",
         "lojas parceiras",
         "nunca prometa ou estime data",  # Em breve
@@ -133,3 +132,38 @@ def test_static_prompt_has_the_complaint_rules() -> None:
         "Protocolo continua o mesmo",
     ):
         assert snippet in rules, snippet
+
+
+def _rules() -> str:
+    return build_static_prompt(CATEGORIES).split("MANUAL DE POLÍTICAS")[0]
+
+
+def test_empty_search_points_to_the_phone_for_any_search() -> None:
+    rules = _rules()
+
+    assert "(qualquer instrumento ou categoria de instrumento," in rules
+    assert "nunca conclua que a loja não trabalha com aquilo" in rules
+    assert "indique o telefone (67) 3341-4444 para consultar a loja" in rules
+    # The phone is no longer restricted to listed categories.
+    assert "Se for uma categoria da lista abaixo" not in rules
+
+
+def test_empty_search_rule_keeps_accessories_out_of_scope() -> None:
+    rules = _rules()
+
+    assert "Acessórios" in rules
+    assert "recuse com gentileza" in rules
+    assert "exceto Acessórios, que são Fora de escopo" in rules
+
+
+def test_out_of_stock_offers_alternatives_without_promising_restock() -> None:
+    rules = _rules()
+
+    assert "Produto esgotado: diga que está temporariamente indisponível" in rules
+    assert "alternativas semelhantes disponíveis usando search_products na mesma categoria" in rules
+    assert "nunca prometa ou estime data de reposição" in rules
+    assert "Produto descontinuado saiu do catálogo" in rules
+
+
+def test_rules_have_no_em_dash() -> None:
+    assert "—" not in _rules()

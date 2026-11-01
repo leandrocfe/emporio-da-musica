@@ -8,12 +8,14 @@ Payloads may carry personal data: masking is the sink's job, not the emitter's.
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Literal, Protocol
+
+EventType = Literal["customer_message", "llm_call", "tool_call", "final_response", "error"]
 
 
 @dataclass(frozen=True, slots=True)
 class Event:
-    type: str
+    type: EventType
     session_id: str
     data: Mapping[str, object] = field(default_factory=dict)
 

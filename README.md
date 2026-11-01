@@ -95,7 +95,7 @@ LLM_MODEL=gemini/gemini-3-flash-preview   # + GEMINI_API_KEY
 LLM_MODEL=openai/gpt-5-mini               # + OPENAI_API_KEY
 ```
 
-O projeto foi testado com Claude (padrão) e Gemini.
+O provedor padrão é o Claude; também é possível usar Gemini ou OpenAI trocando só a configuração acima.
 
 ## Arquitetura em uma página
 
@@ -139,7 +139,7 @@ Um arquivo, sem serviço externo, suficiente para 65 Produtos e 20 Pedidos. O se
 
 ### Chainlit
 
-Dá um chat web com histórico, indicador de carregamento, atalhos e tema da loja sem escrever front-end, e deixa o adaptador de UI fino: a lógica está no `Assistant`, então outra UI (ou uma API HTTP) reaproveitaria o núcleo. Não há ADR próprio; a escolha está no [PRD](docs/PRD.md). O custo é que a Sessão vive em memória por aba do navegador.
+Dá um chat web com histórico, indicador de carregamento, atalhos e tema da loja sem escrever front-end, e deixa o adaptador de UI fino: a lógica está no `Assistant`, então outra UI (ou uma API HTTP) reaproveitaria o núcleo. Não há ADR próprio; a escolha está no [PRD](docs/PRD.md).
 
 ### Prazos de pós-venda calculados em código
 
@@ -176,7 +176,7 @@ Os CSVs em `data/` são a fonte de verdade e não foram corrigidos. O Manual de 
 - **Itens do pedido sem preço unitário:** `order_items` não grava o preço pago. Usar o preço atual do catálogo recalcularia o Pedido, o que é proibido; por isso os Itens saem só com Produto e quantidade.
 - **Preço:** com Promoção vigente, mostra Preço de tabela, percentual e Preço promocional, sem PIX (promoções não são cumulativas). Sem promoção, Preço de tabela e Preço no PIX (5%). Com mais de uma Promoção vigente, vale a maior.
 - **Disponibilidade:** o estoque exato nunca é exposto. 0 é esgotado, 1 a 3 são últimas unidades.
-- **Horário:** seg–sex 09:00–18:00, sáb 09:00–13:00, domingo fechado. Feriados não são modelados.
+- **Horário:** seg–sex 09:00–18:00, sáb 09:00–13:00, domingo fechado.
 - **Data de referência:** relógio real em `America/Campo_Grande`; `AGENT_NOW` fixa o "agora" para demonstrações reproduzíveis. As conversas de exemplo usam `2026-03-23T10:00:00-04:00`, logo após o último Pedido do conjunto.
 
 ## Como auditar pelo log
