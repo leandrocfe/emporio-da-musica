@@ -15,3 +15,7 @@
 - [ ] 4 atalhos iniciais que disparam a conversa correspondente
 - [ ] Indicador de carregamento durante a resposta; estado de erro amigável
 - [ ] Verificação manual no browser: desktop e mobile, foco/teclado nos atalhos, estados loading e erro (com o LLM indisponível)
+
+## Comments
+
+**Da revisão do ticket 07 (2026-11-01):** `src/emporio/chat.py:72` tem um `# type: ignore[no-untyped-call]` na fronteira com o Chainlit, que não publica tipos. Como este ticket mexe em `chat.py`, avaliar trocar por um wrapper tipado ou um stub local.

@@ -117,3 +117,19 @@ def test_static_prompt_has_the_order_rules() -> None:
         "nunca some Itens do pedido nem use preços atuais",
     ):
         assert snippet in rules, snippet
+
+
+def test_static_prompt_has_the_complaint_rules() -> None:
+    rules = build_static_prompt(CATEGORIES).split("MANUAL DE POLÍTICAS")[0]
+
+    for snippet in (
+        "acolha com empatia",
+        "nome, contato (e-mail ou telefone) e a descrição do problema",
+        "register_complaint",
+        "Protocolo retornado",
+        "até 24 horas úteis",
+        "Nunca invente Protocolo",
+        "não confirme nem comente dados do Pedido",
+        "Protocolo continua o mesmo",
+    ):
+        assert snippet in rules, snippet

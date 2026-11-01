@@ -8,6 +8,8 @@ from pathlib import Path
 
 from emporio.assistant import Assistant
 from emporio.clock import Clock, clock_from_env, real_clock
+from emporio.complaint_tools import register_complaint_tools
+from emporio.complaints import ComplaintService
 from emporio.db import db_path_from_env
 from emporio.events import EventSink
 from emporio.llm import LLMClient
@@ -25,6 +27,7 @@ def build_assistant(
     store = StoreService(db_path)
     registry = ToolRegistry()
     register_store_tools(registry, store)
+    register_complaint_tools(registry, ComplaintService(db_path))
     return Assistant(llm, registry, events=events, clock=clock, categories=store.category_names())
 
 

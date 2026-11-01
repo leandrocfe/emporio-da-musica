@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos; 05 — Manual de políticas e situação da loja
 
-**Status:** approved — aguardando commit
+**Status:** done — 778c20a
 
 **Executor:** architect — autorização, anti-enumeração, estado de Sessão e prazos de pós-venda. Revisão com reviewer em `fable` (ticket crítico de autorização).
 

@@ -4,20 +4,20 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** ready-for-agent
+**Status:** approved — aguardando commit
 
 **Executor:** builder — escrita simples sobre a tabela criada no ticket 01.
 
 **Gates:** Persistência (Reclamações preservadas); Assíncrono/integrações (idempotência); Autorização (sem eco de dados de Pedido). Ordem de execução: 07 de 12. ADRs: 0002, 0003.
 
-- [ ] `register_complaint(name, contact, description, order_id?)` grava com data/hora e devolve Protocolo legível + prazo de 24h úteis
-- [ ] Prazo devolvido como texto "até 24 horas úteis" (sem cálculo de horário)
-- [ ] `order_id` gravado como referência livre, sem validar existência e sem ecoar dados do Pedido
-- [ ] Mesma descrição na mesma Sessão devolve o mesmo Protocolo (idempotência)
-- [ ] Tabela de Reclamações preservada entre reinicializações (o seed do catálogo não a apaga); banco em volume Docker
-- [ ] Única ferramenta com escrita; demais seguem somente leitura
-- [ ] Ferramenta registrada no Assistente
-- [ ] Testes: Reclamação gravada e recuperável com Protocolo; Protocolo único em N registros; mesma Sessão + descrição → mesmo Protocolo; sobrevive a novo seed
+- [x] `register_complaint(name, contact, description, order_id?)` grava com data/hora e devolve Protocolo legível + prazo de 24h úteis
+- [x] Prazo devolvido como texto "até 24 horas úteis" (sem cálculo de horário)
+- [x] `order_id` gravado como referência livre, sem validar existência e sem ecoar dados do Pedido
+- [x] Mesma descrição na mesma Sessão devolve o mesmo Protocolo (idempotência)
+- [x] Tabela de Reclamações preservada entre reinicializações (o seed do catálogo não a apaga); banco em volume Docker
+- [x] Única ferramenta com escrita; demais seguem somente leitura
+- [x] Ferramenta registrada no Assistente
+- [x] Testes: Reclamação gravada e recuperável com Protocolo; Protocolo único em N registros; mesma Sessão + descrição → mesmo Protocolo; sobrevive a novo seed
 
 ## Comments
 
