@@ -1,6 +1,6 @@
 # Atendimento Lia — tickets
 
-Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`). Execução em série 01→12.
+Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`). Execução em série 01→10, 13, 11, 12.
 
 | # | Ticket | Executor | Status |
 |---|---|---|---|
@@ -13,7 +13,8 @@ Status de cada ticket (fonte: linha `**Status:**` de cada arquivo em `issues/`).
 | 07 | [Registro de Reclamação](issues/07-registro-de-reclamacao.md) | builder | done — 3d35567 |
 | 08 | [Log de auditoria JSONL](issues/08-log-de-auditoria.md) | builder → architect | done — a40d54d |
 | 09 | [Robustez do loop](issues/09-robustez-do-loop.md) | builder | ready-for-agent |
-| 10 | [Identidade visual do chat](issues/10-identidade-visual-do-chat.md) | builder | ready-for-agent |
+| 10 | [Identidade visual do chat](issues/10-identidade-visual-do-chat.md) | builder | approved — aguardando commit |
+| 13 | [Página de exemplo da loja com a Lia](issues/13-landing-com-a-lia.md) | builder | approved — aguardando commit |
 | 11 | [Conversas de exemplo](issues/11-conversas-de-exemplo.md) | builder + humano | ready-for-agent |
 | 12 | [README do projeto](issues/12-readme-do-projeto.md) | builder | ready-for-agent |
 

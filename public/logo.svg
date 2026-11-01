@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 56" role="img" aria-label="Empório da Música">
+  <view id="avatar" viewBox="-2 6 44 44"/>
+  <g transform="translate(0 6)">
+    <path d="M20 42C12 34 2 22.5 2 13.5 2 5.5 10 2 20 2s18 3.5 18 11.5C38 22.5 28 34 20 42z" fill="#2F4BFF"/>
+    <circle cx="16.5" cy="24.5" r="4.6" fill="#FFFFFF"/>
+    <path d="M21 24.5V9.5c3.8.6 6.6 3.4 6.9 7.6" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="31" cy="8" r="3" fill="#C8F25A"/>
+  </g>
+  <text x="50" y="30" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="25" font-weight="800" letter-spacing="-1" fill="#0E1330">empório</text>
+  <text x="51" y="47" font-family="'Plus Jakarta Sans',system-ui,sans-serif" font-size="14.5" font-weight="500" fill="#2F4BFF">da música</text>
+</svg>

@@ -113,6 +113,7 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
 66. Como desenvolvedor, quero fixar a Data de referência por configuração, para que conversas de exemplo e testes sejam reproduzíveis.
 67. Como desenvolvedor, quero rodar a suíte de testes sem chave de API e sem rede, para que os testes sejam rápidos, baratos e determinísticos.
 68. Como desenvolvedor, quero regenerar as conversas de exemplo com um comando contra o modelo real, para que os exemplos reflitam o comportamento atual.
+69. Como visitante do projeto rodando, quero abrir uma página de exemplo da loja com a Lia num painel ao lado, para que eu veja o Assistente no contexto de um site real; a página é estática e seus botões só levam o cursor ao campo de pergunta da Lia.
 
 ## Implementation Decisions
 
@@ -137,6 +138,7 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
 6. **Log de auditoria** — JSON Lines, um evento por linha, com `session_id` e timestamp: mensagem do Cliente, chamada de LLM (modelo, latência, tokens), chamada de ferramenta (nome, argumentos, duração, sucesso/erro, resumo do resultado), resposta final, erros. E-mails e telefones mascarados em todo o conteúdo registrado, antes da escrita; system prompt registrado por hash/versão.
 7. **UI de chat (Chainlit)** — adaptador fino sobre o Assistente: tema com nome, logo e cores da loja; mensagem de boas-vindas da Lia; 4 botões de atalho; indicador de carregamento; histórico em memória por sessão do navegador. Ferramentas não são exibidas ao Cliente (a auditoria fica no log).
 8. **Gerador de conversas de exemplo** — comando que roda roteiros de conversa contra o modelo real, com Data de referência fixa, e grava cada conversa em Markdown junto do trecho correspondente do log.
+9. **Página de exemplo da loja** — HTML estático, sem lógica de loja, servido em `/` por um FastAPI fino que monta o Chainlit em `/lia` (mesma origem); a Lia aparece num card à direita via iframe, e os botões da página só dão foco ao campo de pergunta. `/lia` segue acessível em tela cheia.
 
 ### Contratos das ferramentas
 
@@ -221,10 +223,11 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
 - Calendário de feriados e horários especiais de campanhas.
 - Streaming token a token da resposta.
 - Validação formal com Gemini ou outros provedores (suportado por configuração; testado com Claude).
-- Widget flutuante (Chainlit copilot) — evolução opcional se sobrar tempo.
+- Widget flutuante (Chainlit copilot) — evolução opcional se sobrar tempo; a página de exemplo usa iframe em `/lia`.
+- Lógica de loja na página de exemplo (busca, catálogo navegável, carrinho, login).
 
 ## Further Notes
 
-- Fluxo de trabalho: este PRD → tickets (`/to-tickets`) → análise do architect → execução roteada, em série 01→12 → revisão por ticket.
+- Fluxo de trabalho: este PRD → tickets (`/to-tickets`) → análise do architect → execução roteada, em série 01→10, 13, 11, 12 → revisão por ticket.
 - Decisões registradas em `docs/adr/`: 0001 portas do Assistente; 0002 persistência e dinheiro; 0003 Verificação do pedido; 0004 prompt, caching, truncamento e retry; 0005 prazos de pós-venda em código.
 - Uma futura UI Livewire consumiria o Assistente por uma API HTTP fina (`reply(session, message)` exposto); o desacoplamento atual já permite isso sem reescrever o núcleo.

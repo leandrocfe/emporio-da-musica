@@ -8,7 +8,7 @@
 
 **Executor:** builder (código do gerador) + humano (execução contra o modelo real, com chave e custo; o agente só implementa o gerador).
 
-**Gates:** Assíncrono/integrações (LLM real); logging seguro (conversas publicadas mascaradas). Ordem de execução: 11 de 12.
+**Gates:** Assíncrono/integrações (LLM real); logging seguro (conversas publicadas mascaradas). Ordem de execução: 12 de 13.
 
 - [ ] Comando único regenera todas as conversas com `AGENT_NOW=2026-03-23T10:00:00-04:00` (segunda-feira logo após o último Pedido do conjunto de dados) e temperatura 0
 - [ ] Cada conversa em Markdown com as falas e o trecho do log (ferramentas escolhidas, argumentos, resultados), mascarado

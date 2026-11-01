@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Chainlit theme tokens are set for both saved theme preferences. */
+html:root, html.dark {
+  --background: 0 0% 100%;
+  --foreground: 231 55% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 231 55% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 231 55% 12%;
+  --primary: 232 100% 59%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 223 47% 97%;
+  --secondary-foreground: 231 55% 12%;
+  --muted: 223 47% 97%;
+  --muted-foreground: 230 23% 37%;
+  --accent: 223 47% 97%;
+  --accent-foreground: 231 55% 12%;
+  --border: 225 40% 92%;
+  --input: 225 40% 92%;
+  --ring: 232 100% 59%;
+}
+
+#root {
+  background: #fff;
+  color: #0e1330;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+#header {
+  min-height: 76px;
+  background: #fff;
+  border-bottom: 1px solid #e3e7f3;
+}
+
+/* Chainlit removes its welcome logo after the first message. Keep the brand visible. */
+#header::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 178px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  background: url('logo.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* The store uses one accessible palette regardless of a saved system preference. */
+#theme-toggle { display: none; }
+
+/* The #avatar fragment of logo.svg crops the pin symbol only. */
+img[src$='logo.svg#avatar'] { object-fit: contain; }
+
+/* Center the opening message within the available chat space. */
+.step:has(button[id^='lia-shortcut-']) { margin-block: auto; }
+div:has(> .step[data-step-type='user_message']) > .step:has(button[id^='lia-shortcut-']) {
+  margin-block: 0;
+}
+
+/* Assistant bubble: the content column next to the avatar. */
+[data-step-type='assistant_message'] .ai-message { gap: 0.75rem; line-height: 1.6; }
+[data-step-type='assistant_message'] .ai-message > div:last-child {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(100%, 36rem);
+  padding: 0.75rem 1rem;
+  background: #f4f6fb;
+  color: #0e1330;
+  border-radius: 18px 18px 18px 6px;
+}
+/* The opening message carries the shortcut chips, so it uses the full width. */
+[data-step-type='assistant_message'] .ai-message > div:has(button[id^='lia-shortcut-']) {
+  flex: 1 1 auto;
+}
+
+[data-step-type='assistant_message'] .ai-message h1,
+[data-step-type='assistant_message'] .ai-message h2 {
+  color: #0e1330;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+[data-step-type='assistant_message'] .ai-message h2 {
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+}
+
+[data-step-type='assistant_message'] .ai-message a { color: #2f4bff; text-decoration: underline; }
+
+/* Customer bubble: Chainlit renders it as the .bg-accent block of the user step. */
+[data-step-type='user_message'] .bg-accent {
+  background: #2f4bff;
+  color: #fff;
+  border-radius: 18px 18px 6px 18px;
+}
+[data-step-type='user_message'] .bg-accent * { color: inherit; }
+
+/* Action IDs are assigned by the adapter; other message controls remain untouched. */
+button[id^='lia-shortcut-'] {
+  min-height: 44px;
+  height: auto;
+  padding: 0.6rem 1rem;
+  margin: 0.25rem;
+  border: 1.5px solid #d5dbf0;
+  border-radius: 999px;
+  background: #fff;
+  color: #0e1330;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: normal;
+  text-align: left;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
+    transform 160ms ease;
+}
+
+button[id^='lia-shortcut-']:hover:not(:disabled) {
+  background: #fff;
+  border-color: #2f4bff;
+  color: #2f4bff;
+}
+button[id^='lia-shortcut-']:active:not(:disabled) { transform: translateY(1px); }
+button[id^='lia-shortcut-']:disabled { opacity: 0.6; }
+
+#message-composer {
+  background: #f4f6fb;
+  border: 1.5px solid #e3e7f3;
+  border-radius: 20px;
+  box-shadow: none;
+  color: #0e1330;
+}
+#chat-input { color: #0e1330; }
+#chat-input::placeholder { color: #5a6185; opacity: 1; }
+#chat-submit {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: #2f4bff;
+  color: #fff;
+}
+#chat-submit:hover:not(:disabled) { background: #1a33d6; }
+#chat-submit svg { color: #fff; }
+button:focus-visible, textarea:focus-visible, a:focus-visible {
+  outline: 3px solid #2f4bff;
+  outline-offset: 3px;
+}
+/* The focus ring sits on the rounded composer; the id selector beats textarea:focus-visible. */
+#chat-input:focus-visible { outline: none; }
+#message-composer:focus-within {
+  border-color: #2f4bff;
+  box-shadow: 0 0 0 3px rgb(47 75 255 / 20%);
+}
+
+/* Chainlit 2.12: compact the connection banner without hiding its alert. */
+#root #session-error {
+  margin: 0.25rem 0.75rem;
+  padding: 0.65rem 0.75rem;
+  background: #fdeef0;
+  border-color: #f0b4be;
+  color: #7a1f2e;
+}
+#root #session-error p, #root #session-error svg { color: #7a1f2e; }
+#root #session-error p { line-height: 1.4; }
+#root div:has(> #session-error) { margin: 0; }
+
+@media (max-width: 800px) {
+  #root { --lia-mobile-inset: clamp(1rem, 4vw, 1.5rem); }
+  #root #header { min-height: 68px; }
+  #root #header::before { width: 150px; height: 48px; }
+
+  #root div:has(> .step button[id^='lia-shortcut-']) {
+    padding-inline: var(--lia-mobile-inset);
+  }
+
+  /* The opening message starts near the top, leaving room for the composer. */
+  #root .step:has(button[id^='lia-shortcut-']) {
+    margin-block: 0;
+    padding-top: 0.75rem;
+  }
+  #root [data-step-type='assistant_message'] .ai-message { gap: 0.65rem; }
+  #root .ai-message > div { min-width: 0; }
+  #root .ai-message div:has(> button[id^='lia-shortcut-']) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    margin: 0.35rem 0 0;
+  }
+  #root button[id^='lia-shortcut-'] {
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+    justify-content: flex-start;
+    line-height: 1.3;
+  }
+
+  /* Reserve safe-area space below the input and keep the notice attached to it. */
+  #root div:has(> #message-composer) {
+    gap: 0.45rem;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  #root #message-composer { min-height: 5rem; }
+  #root .watermark {
+    color: #4a5175;
+    max-width: 32rem;
+    text-align: center;
+  }
+}
+
+@media (max-height: 500px) and (max-width: 900px) {
+  #root #header { min-height: 56px; height: 56px; }
+  #root #header::before { height: 42px; }
+  #root .step:has(button[id^='lia-shortcut-']) { padding-top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button[id^='lia-shortcut-'] { transition: none; }
+}

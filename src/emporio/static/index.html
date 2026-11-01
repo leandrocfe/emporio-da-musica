@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empório da Música — Conheça a Lia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F4BFF}a:hover{color:#1A33D6}
+.nav-link{color:#0E1330;text-decoration:none;font-weight:600}
+.nav-link:hover{color:#2F4BFF}
+.icon-link{color:#0E1330;text-decoration:none}
+.icon-link:hover{color:#2F4BFF}
+.btn-white:hover{background:#E6EBFF !important}
+.btn-line:hover{background:rgba(255,255,255,0.14) !important}
+.btn-blue:hover{background:#1A33D6 !important;color:#FFFFFF !important}
+.btn-ink:hover{background:#0E1330 !important;color:#FFFFFF !important}
+.ask:hover{border-color:#2F4BFF !important;background:#F5F7FF !important}
+.cat:hover{background:#FFFFFF !important;color:#0E1330 !important}
+.ghost-icon:hover{background:#EEF1FF !important}
+button{font-family:inherit}
+#lia{flex:0 0 clamp(440px,34vw,560px);align-self:flex-start;position:sticky;top:0;height:max(760px,min(100vh,960px));box-sizing:border-box;padding:28px 32px 28px 0}
+.lia-card{height:100%;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #E3E7F3;border-radius:28px;box-shadow:0 18px 48px rgba(14,19,48,0.08);overflow:hidden}
+@media (max-width:1100px){#lia{flex-basis:100%;position:static;height:80vh;padding:0 32px 28px}}
+</style>
+</head>
+<body>
+<div style="width: 100%; background: #F4F6FB; color: #0E1330; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 16px; line-height: 1.5">
+
+<!-- Barra de aviso -->
+<div style="background: #0E1330; color: #FFFFFF; padding: 10px 24px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; font-size: 14px; font-weight: 500">
+<span style="padding: 2px 10px; border-radius: 999px; background: #C8F25A; color: #0E1330; font-size: 12px; font-weight: 800">NOVO</span>
+<span>Conheça a Lia, sua atendente virtual. Ela está aqui ao lado para tirar suas dúvidas.</span>
+</div>
+
+<!-- Cabeçalho da loja -->
+<header style="background: #FFFFFF; border-bottom: 1px solid #E3E7F3">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding: 18px 32px">
+<a href="#inicio" aria-label="Empório da Música — início" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #0E1330; flex: none">
+<svg width="40" height="44" viewBox="0 0 40 44" aria-hidden="true"><path d="M20 42C12 34 2 22.5 2 13.5 2 5.5 10 2 20 2s18 3.5 18 11.5C38 22.5 28 34 20 42z" fill="#2F4BFF"/><circle cx="16.5" cy="24.5" r="4.6" fill="#FFFFFF"/><path d="M21 24.5V9.5c3.8.6 6.6 3.4 6.9 7.6" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><circle cx="31" cy="8" r="3" fill="#C8F25A"/></svg>
+<span style="display: flex; flex-direction: column; line-height: 1">
+<span style="font-weight: 800; font-size: 23px; letter-spacing: -0.04em">empório</span>
+<span style="font-weight: 500; font-size: 13px; letter-spacing: 0.02em; color: #2F4BFF; margin-top: 3px">da música</span>
+</span>
+</a>
+<nav aria-label="Conta" style="margin-left: auto; display: flex; align-items: center; gap: 4px; flex: none">
+<a class="icon-link ghost-icon" href="#carrinho" aria-label="Carrinho, 0 itens" style="position: relative; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px">
+<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+<span style="position: absolute; top: 4px; right: 3px; min-width: 18px; height: 18px; border-radius: 999px; background: #2F4BFF; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">0</span></a>
+</nav>
+</div>
+<nav aria-label="Categorias" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding: 0 32px 14px; font-size: 15px">
+<a class="nav-link" href="#catalogo">Cordas</a>
+<a class="nav-link" href="#catalogo">Teclas</a>
+<a class="nav-link" href="#catalogo">Percussão</a>
+<a class="nav-link" href="#catalogo">Sopros</a>
+<a class="nav-link" href="#catalogo">Ukuleles</a>
+<a href="#catalogo" style="font-weight: 700; color: #2F4BFF; text-decoration: none">Ofertas</a>
+</nav>
+</header>
+
+<!-- Conteúdo + Chat -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start">
+
+<main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+
+<!-- HERO: bento -->
+<section id="inicio" style="padding: 28px 32px 56px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch">
+
+<!-- Card principal: Lia -->
+<div style="flex: 2 1 520px; min-width: 0; position: relative; overflow: hidden; border-radius: 32px; background: #2F4BFF; color: #FFFFFF; padding: 44px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; min-height: 520px; box-sizing: border-box">
+<svg width="420" height="420" viewBox="0 0 420 420" aria-hidden="true" style="position: absolute; right: -110px; bottom: -120px"><g fill="none" stroke="#FFFFFF" stroke-width="2"><circle cx="210" cy="210" r="90" opacity="0.28"/><circle cx="210" cy="210" r="140" opacity="0.18"/><circle cx="210" cy="210" r="190" opacity="0.1"/></g></svg>
+<div style="position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+<span style="padding: 6px 14px; border-radius: 999px; background: #C8F25A; color: #0E1330; font-size: 13px; font-weight: 800; letter-spacing: 0.02em">Atendente virtual</span>
+<div style="position: relative; width: 64px; height: 64px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="30" height="33" viewBox="0 0 40 44" aria-hidden="true"><path d="M20 42C12 34 2 22.5 2 13.5 2 5.5 10 2 20 2s18 3.5 18 11.5C38 22.5 28 34 20 42z" fill="#2F4BFF"/><circle cx="16.5" cy="24.5" r="4.6" fill="#FFFFFF"/><path d="M21 24.5V9.5c3.8.6 6.6 3.4 6.9 7.6" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/></svg>
+<span style="position: absolute; right: 2px; bottom: 2px; width: 14px; height: 14px; border-radius: 999px; background: #C8F25A; border: 3px solid #2F4BFF"></span>
+</div>
+</div>
+<div style="position: relative; display: flex; flex-direction: column; gap: 20px; max-width: none">
+<h1 style="margin: 0; font-weight: 800; font-size: clamp(48px, 4.6vw, 76px); line-height: 0.98; letter-spacing: -0.045em; white-space: nowrap">Oi, eu sou a <span style="color: #C8F25A">Lia.</span></h1>
+<p style="margin: 0; font-size: 20px; line-height: 1.5; color: #E6EBFF">Te ajudo a escolher o instrumento certo, acompanhar seu pedido e tirar dúvidas sobre a loja, sem fila e sem complicação.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px">
+<button type="button" class="btn-white" data-action="focus" style="display: inline-flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 26px; border-radius: 999px; border: 0; background: #FFFFFF; color: #2F4BFF; font-weight: 800; font-size: 17px; cursor: pointer">
+<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.5-4.6A8 8 0 1 1 21 12z"/></svg>
+Conversar com a Lia</button>
+<a class="btn-line" href="#catalogo" style="display: inline-flex; align-items: center; gap: 8px; min-height: 54px; padding: 0 24px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.7); color: #FFFFFF; font-weight: 700; font-size: 17px; text-decoration: none; box-sizing: border-box">Ver catálogo
+<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</div>
+</div>
+</div>
+
+<!-- Coluna lateral do bento -->
+<div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<div style="flex: 1; border-radius: 32px; background: #0E1330; color: #FFFFFF; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #C8F25A">Catálogo</span>
+<h2 style="margin: 0; font-weight: 800; font-size: 28px; line-height: 1.12; letter-spacing: -0.03em">Instrumentos para todos os estilos</h2>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<a class="cat" href="#catalogo" style="padding: 8px 14px; border-radius: 999px; border: 1px solid #3A4170; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600">Cordas</a>
+<a class="cat" href="#catalogo" style="padding: 8px 14px; border-radius: 999px; border: 1px solid #3A4170; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600">Teclas</a>
+<a class="cat" href="#catalogo" style="padding: 8px 14px; border-radius: 999px; border: 1px solid #3A4170; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600">Percussão</a>
+<a class="cat" href="#catalogo" style="padding: 8px 14px; border-radius: 999px; border: 1px solid #3A4170; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 600">Sopros</a>
+</div>
+<a href="#catalogo" style="color: #C8F25A; font-weight: 700; text-decoration: none">Ver catálogo completo →</a>
+</div>
+<div style="border-radius: 32px; background: #FFFFFF; border: 1px solid #E3E7F3; padding: 28px 32px; display: flex; flex-direction: column; gap: 14px">
+<div style="width: 48px; height: 48px; border-radius: 16px; background: #E6EBFF; display: flex; align-items: center; justify-content: center">
+<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#2F4BFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>
+</div>
+<h2 style="margin: 0; font-weight: 800; font-size: 22px; line-height: 1.2; letter-spacing: -0.02em">Onde está meu pedido?</h2>
+<p style="margin: 0; color: #4A5175; font-size: 15px">Informe o número do pedido para a Lia e veja o status na hora.</p>
+<button type="button" class="btn-blue" data-action="order" data-question="Quero consultar o status do meu pedido." style="align-self: flex-start; min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1.5px solid #2F4BFF; background: #FFFFFF; color: #2F4BFF; font-weight: 700; font-size: 15px; cursor: pointer">Consultar com a Lia</button>
+</div>
+</div>
+</div>
+
+<!-- Experimente perguntar -->
+<div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Experimente perguntar</h2>
+<span style="font-size: 14px; color: #4A5175">Toque em uma pergunta e faça ela à Lia, ao lado</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+<button type="button" class="ask" data-action="focus" data-question="Qual violão é bom para quem está começando?" style="text-align: left; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; min-height: 148px; padding: 22px; border-radius: 24px; border: 1.5px solid #E3E7F3; background: #FFFFFF; color: #0E1330; cursor: pointer"><span style="font-size: 13px; font-weight: 700; color: #2F4BFF">Escolher</span><span style="font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em">Qual violão é bom para quem está começando?</span></button>
+<button type="button" class="ask" data-action="focus" data-question="Onde está o meu pedido?" style="text-align: left; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; min-height: 148px; padding: 22px; border-radius: 24px; border: 1.5px solid #E3E7F3; background: #FFFFFF; color: #0E1330; cursor: pointer"><span style="font-size: 13px; font-weight: 700; color: #2F4BFF">Pedidos</span><span style="font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em">Onde está o meu pedido?</span></button>
+<button type="button" class="ask" data-action="focus" data-question="Como faço para trocar um produto?" style="text-align: left; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; min-height: 148px; padding: 22px; border-radius: 24px; border: 1.5px solid #E3E7F3; background: #FFFFFF; color: #0E1330; cursor: pointer"><span style="font-size: 13px; font-weight: 700; color: #2F4BFF">Trocas</span><span style="font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em">Como faço para trocar um produto?</span></button>
+<button type="button" class="ask" data-action="focus" data-question="Qual o horário de atendimento?" style="text-align: left; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; min-height: 148px; padding: 22px; border-radius: 24px; border: 1.5px solid #E3E7F3; background: #FFFFFF; color: #0E1330; cursor: pointer"><span style="font-size: 13px; font-weight: 700; color: #2F4BFF">Contato</span><span style="font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em">Qual o horário de atendimento?</span></button>
+</div>
+</div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre" style="margin: 0 32px 40px; padding: 64px 56px; border-radius: 32px; background: #FFFFFF; border: 1px solid #E3E7F3; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px 56px; align-items: stretch">
+<div style="flex: 3 1 400px; display: flex; flex-direction: column; gap: 22px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #2F4BFF">Sobre o Empório</span>
+<h2 style="margin: 0; font-weight: 800; font-size: 48px; line-height: 1.04; letter-spacing: -0.04em">Uma loja de instrumentos feita para quem ama música e para quem está só começando.</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #4A5175; max-width: 600px">O Empório da Música é uma loja virtual de instrumentos musicais. Reunimos cordas, teclas, percussão e sopros em um só lugar, com informação clara para você comparar com calma e escolher com confiança. E, quando bater a dúvida, a Lia está sempre ao lado.</p>
+</div>
+<div style="flex: 2 1 260px; min-height: 300px; border-radius: 24px; background: #E6EBFF; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box; position: relative; overflow: hidden">
+<svg width="220" height="242" viewBox="0 0 40 44" aria-hidden="true" style="position: absolute; right: -30px; top: -20px; opacity: 0.5"><path d="M20 42C12 34 2 22.5 2 13.5 2 5.5 10 2 20 2s18 3.5 18 11.5C38 22.5 28 34 20 42z" fill="#C5D0FF"/></svg>
+<span style="position: relative; padding: 6px 12px; border-radius: 999px; background: #FFFFFF; font-size: 12px; font-weight: 700; color: #4A5175">[FOTO DA LOJA OU DA EQUIPE]</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px">
+<div style="border-top: 2px solid #0E1330; padding-top: 20px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 800; color: #2F4BFF">01</span>
+<h3 style="margin: 0; font-weight: 800; font-size: 20px; letter-spacing: -0.02em">Curadoria</h3>
+<p style="margin: 0; color: #4A5175; font-size: 15px">Instrumentos escolhidos para atender do primeiro acorde ao palco.</p>
+</div>
+<div style="border-top: 2px solid #0E1330; padding-top: 20px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 800; color: #2F4BFF">02</span>
+<h3 style="margin: 0; font-weight: 800; font-size: 20px; letter-spacing: -0.02em">Atendimento com a Lia</h3>
+<p style="margin: 0; color: #4A5175; font-size: 15px">Dúvidas sobre produtos, pedidos e trocas respondidas durante a sua visita.</p>
+</div>
+<div style="border-top: 2px solid #0E1330; padding-top: 20px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 800; color: #2F4BFF">03</span>
+<h3 style="margin: 0; font-weight: 800; font-size: 20px; letter-spacing: -0.02em">Compra tranquila</h3>
+<p style="margin: 0; color: #4A5175; font-size: 15px">Acompanhe o pedido e conte com uma política clara de trocas e devoluções.</p>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; padding: 28px 32px; border-radius: 24px; background: #F4F6FB">
+<p style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Pronto para encontrar o seu som?</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<a class="btn-ink" href="#catalogo" style="display: inline-flex; align-items: center; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 1.5px solid #0E1330; color: #0E1330; font-weight: 700; text-decoration: none; box-sizing: border-box">Ver catálogo</a>
+<button type="button" class="btn-blue" data-action="focus" style="min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; background: #2F4BFF; color: #FFFFFF; font-weight: 700; font-size: 16px; cursor: pointer">Falar com a Lia</button>
+</div>
+</div>
+</section>
+
+</main>
+
+<!-- CHAT DA LIA -->
+<aside id="lia" aria-label="Chat com a Lia, atendente virtual">
+<div class="lia-card">
+<iframe id="lia-frame" src="/lia" title="Chat com a Lia, atendente virtual" style="flex: 1; width: 100%; height: 100%; border: 0; min-height: 0"></iframe>
+</div>
+</aside>
+
+</div>
+</div>
+<script>
+(function () {
+  // The Chainlit input is a React-controlled <textarea>: assigning .value alone is
+  // overwritten on the next render. Use the native setter from the iframe's own realm
+  // and dispatch an 'input' event so React's onChange picks the new value up.
+  function fillInput(frame, input, text) {
+    var proto = frame.contentWindow.HTMLTextAreaElement.prototype;
+    Object.getOwnPropertyDescriptor(proto, 'value').set.call(input, text);
+    input.dispatchEvent(new frame.contentWindow.Event('input', { bubbles: true }));
+    input.setSelectionRange(text.length, text.length);
+  }
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-action]') : null;
+    if (!el) return;
+    var frame = document.getElementById('lia-frame');
+    document.getElementById('lia').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    var input = null;
+    try { input = frame.contentDocument && frame.contentDocument.getElementById('chat-input'); } catch (err) { input = null; }
+    var question = el.dataset.question;
+    if (input && question) {
+      fillInput(frame, input, question);
+      // Right after the chat loads, Chainlit resets the composer once when the session
+      // connects; a click in that window would lose the text, so check again and refill.
+      setTimeout(function () {
+        var again = frame.contentDocument.getElementById('chat-input');
+        if (again && !again.value) { fillInput(frame, again, question); again.focus(); }
+      }, 600);
+    }
+    (input || frame).focus();
+  });
+})();
+</script>
+</body>
+</html>

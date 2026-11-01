@@ -445,8 +445,10 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "chainlit" },
+    { name = "fastapi" },
     { name = "litellm" },
     { name = "tzdata" },
+    { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
@@ -459,8 +461,10 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "chainlit", specifier = ">=2.12.0" },
+    { name = "fastapi", specifier = ">=0.162.0" },
     { name = "litellm", specifier = ">=1.106.6,<1.107" },
     { name = "tzdata", specifier = ">=2026.6" },
+    { name = "uvicorn", specifier = ">=0.54.0" },
 ]
 
 [package.metadata.requires-dev]

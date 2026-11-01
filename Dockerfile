@@ -1,4 +1,4 @@
-# Lia — chat de atendimento da Empório da Música (Chainlit na porta 8000).
+# Lia — página de exemplo em / e chat de atendimento (Chainlit) em /lia, via uvicorn na porta 8000.
 FROM python:3.13-slim
 
 # Same uv minor as the lockfile was produced with; the binary is copied, not installed.
@@ -21,6 +21,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 COPY data ./data
+COPY public ./public
 COPY .chainlit/config.toml ./.chainlit/config.toml
 COPY chainlit.md docker-entrypoint.sh ./
 
@@ -49,4 +50,4 @@ USER lia
 
 EXPOSE 8000
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["chainlit", "run", "src/emporio/chat.py", "--host", "0.0.0.0", "--port", "8000", "--headless"]
+CMD ["uvicorn", "emporio.web:app", "--host", "0.0.0.0", "--port", "8000"]
