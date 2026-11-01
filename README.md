@@ -176,7 +176,7 @@ Os CSVs em `data/` são a fonte de verdade e não foram corrigidos. O Manual de 
 - **Itens do pedido sem preço unitário:** `order_items` não grava o preço pago. Usar o preço atual do catálogo recalcularia o Pedido, o que é proibido; por isso os Itens saem só com Produto e quantidade.
 - **Preço:** com Promoção vigente, mostra Preço de tabela, percentual e Preço promocional, sem PIX (promoções não são cumulativas). Sem promoção, Preço de tabela e Preço no PIX (5%). Com mais de uma Promoção vigente, vale a maior.
 - **Disponibilidade:** o estoque exato nunca é exposto. 0 é esgotado, 1 a 3 são últimas unidades.
-- **Horário:** seg–sex 09:00–18:00, sáb 09:00–13:00, domingo fechado.
+- **Horário:** seg–sex 09:00–18:00, sáb 09:00–13:00, domingo e feriados fechado (nacionais, estadual de MS e municipais de Campo Grande, calculados em código).
 - **Data de referência:** relógio real em `America/Campo_Grande`; `AGENT_NOW` fixa o "agora" para demonstrações reproduzíveis. As conversas de exemplo usam `2026-03-23T10:00:00-04:00`, logo após o último Pedido do conjunto.
 
 ## Como auditar pelo log

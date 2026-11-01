@@ -153,7 +153,7 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
 - **Disponibilidade**: `discontinued` e `coming_soon` pelo status do Produto; senão estoque 0 → `out_of_stock`; 1 a 3 → `last_units`; acima → `available`. Número exato de estoque nunca é exposto.
 - **Prazos de pós-venda** (ADR-0005): calculados em código pelo `get_order` com a Data de referência, seguindo o Manual — arrependimento 7 dias corridos a partir da Entrega prevista; troca por defeito 30 dias corridos a partir da data do Pedido; garantia legal 90 dias corridos a partir da Entrega prevista. Cada janela traz data limite, se está dentro do prazo e `borderline` (até 2 dias do limite, antes ou depois) nas janelas contadas da Entrega prevista; a troca por defeito, contada da data exata do Pedido, não tem margem. Janelas só para Pedidos entregues. Pedido enviado com Entrega prevista vencida → `overdue`. A Lia declara a Entrega prevista como aproximação e encaminha ao Atendimento humano casos `borderline` ou `overdue`.
 - **Data de referência**: relógio real em `America/Campo_Grande`; sobrescrevível por `AGENT_NOW` em ISO 8601 (sem offset = America/Campo_Grande; usado nas conversas de exemplo com `2026-03-23T10:00:00-04:00`, segunda-feira logo após o último Pedido do conjunto de dados).
-- **Horário**: aberta seg–sex 09:00–18:00 e sáb 09:00–13:00; fechada domingo. Feriados não são modelados.
+- **Horário**: aberta seg–sex 09:00–18:00 e sáb 09:00–13:00; fechada domingo e em feriados. Feriados nacionais, o estadual de MS (11/10) e os municipais de Campo Grande (13/06 e 26/08) são modelados em código, com Sexta-feira Santa derivada da Páscoa; Carnaval e Corpus Christi (ponto facultativo) ficam de fora (ADR-0006).
 
 ### Robustez do loop
 
@@ -220,7 +220,7 @@ O projeto roda com um único comando via Docker, é agnóstico de provedor de LL
 - Persistência do histórico de conversa entre sessões/recargas.
 - Login/conta de Cliente; criação, alteração ou cancelamento de Pedidos; pagamentos.
 - Envio real de e-mail/WhatsApp para Reclamações; cálculo de frete por CEP.
-- Calendário de feriados e horários especiais de campanhas.
+- Horários especiais de campanhas.
 - Streaming token a token da resposta.
 - Validação formal com Gemini ou outros provedores (suportado por configuração; testado com Claude).
 - Widget flutuante (Chainlit copilot) — evolução opcional se sobrar tempo; a página de exemplo usa iframe em `/lia`.

@@ -94,5 +94,9 @@ _Avoid_: FAQ, regulamento
 **Fora de escopo** (en: `out of scope`):
 Pergunta que não trata de instrumentos, pedidos ou políticas da loja; o Assistente recusa com gentileza e redireciona.
 
+**Feriado** (en: `holiday`):
+Dia em que a loja está fechada, como no domingo: feriados nacionais, o estadual de Mato Grosso do Sul e os municipais de Campo Grande, calculados em código (ADR-0006). Carnaval e Corpus Christi (ponto facultativo) não entram.
+_Avoid_: Dia santo, folga
+
 **Data de referência** (en: `now`):
 Momento considerado "agora" pelo Assistente para horário de funcionamento e prazos; por padrão o relógio real em America/Campo_Grande, fixável para demonstrações reproduzíveis.

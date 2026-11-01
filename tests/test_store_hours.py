@@ -1,4 +1,4 @@
-"""Seam — store status and Reference date clock (ticket 05)."""
+"""Seam — store status and Reference date clock (tickets 05 and 14)."""
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -52,6 +52,40 @@ def test_sunday_is_closed_and_opens_monday() -> None:
     status = store_status(at(2026, 3, 22, 11))
 
     assert status == StoreStatus(is_open=False, changes_at=at(2026, 3, 23, 9))
+
+
+def test_sunday_before_a_holiday_monday_opens_tuesday() -> None:
+    status = store_status(at(2026, 11, 1, 14, 3))  # Sunday; Monday is Finados
+
+    assert status == StoreStatus(is_open=False, changes_at=at(2026, 11, 3, 9))
+
+
+def test_holiday_during_business_hours_is_closed() -> None:
+    status = store_status(at(2026, 11, 2, 10))  # Monday, Finados
+
+    assert status == StoreStatus(is_open=False, changes_at=at(2026, 11, 3, 9))
+
+
+def test_good_friday_is_closed_and_saturday_opens() -> None:
+    status = store_status(at(2026, 4, 3, 10))
+
+    assert status == StoreStatus(is_open=False, changes_at=at(2026, 4, 4, 9))
+
+
+def test_saturday_holiday_skips_sunday_and_opens_monday() -> None:
+    # 2025-11-15 is a Saturday (Proclamação da República).
+    assert store_status(at(2025, 11, 15, 10)) == StoreStatus(False, at(2025, 11, 17, 9))
+
+
+def test_friday_holiday_opens_saturday() -> None:
+    # Friday holiday (Natal) followed by the weekend: opens on Saturday.
+    assert store_status(at(2026, 12, 25, 10)) == StoreStatus(False, at(2026, 12, 26, 9))
+
+
+def test_campo_grande_anniversary_is_closed_and_opens_next_day() -> None:
+    status = store_status(at(2026, 8, 26, 10))  # Wednesday
+
+    assert status == StoreStatus(is_open=False, changes_at=at(2026, 8, 27, 9))
 
 
 def test_agent_now_without_offset_is_store_time() -> None:

@@ -8,16 +8,17 @@ the cache breakpoint, which the LLM adapter places between the two blocks.
 
 import hashlib
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
+from emporio.holidays import GOOD_FRIDAY, fixed_holidays_sorted, holiday_name
 from emporio.llm import Message, system_message
 from emporio.store_hours import store_status
 from emporio.store_info import STORE_EMAIL, STORE_PHONE
 
 # Bump when the persona or rules change in meaning; the audit log records it next
 # to the hash of the static prefix (the hash alone also catches Manual edits).
-PROMPT_VERSION = "2"
+PROMPT_VERSION = "3"
 
 MANUAL_PATH = Path(__file__).with_name("politicas-da-loja.md")
 
@@ -75,8 +76,14 @@ indique o telefone {STORE_PHONE} para consultar a loja. Pode sugerir refinar a b
 - Horário de funcionamento, formas de pagamento, parcelamento, trocas, frete, \
 garantia e demais regras: responda a partir do Manual de políticas abaixo, sem \
 inventar nada que ele não diga. Para horário e "a loja está aberta?", use a situação \
-da loja informada no fim destas instruções. Não cite a quantidade de Produtos do \
-catálogo.
+da loja informada no fim destas instruções. Os feriados da lista "Feriados em que a \
+loja fecha" significam loja fechada: para data concreta e próxima abertura use o bloco \
+no fim destas instruções, cuja linha "Feriados nos próximos dias" cobre só os próximos \
+7 dias (se a linha não aparece, não há feriado nesses 7 dias); para um feriado \
+da lista numa data além desses 7 dias, diga que a loja fecha nesse feriado. \
+Se o Cliente disser que um dia é feriado e ele não estiver na lista, não confirme nem \
+negue o feriado: informe o horário normal e sugira confirmar pelo telefone \
+{STORE_PHONE}. Não cite a quantidade de Produtos do catálogo.
 - A loja vende só instrumentos musicais. Pedidos de Acessórios (cordas, cabos, \
 palhetas, pedais, amplificadores, cases) e perguntas Fora de escopo (assuntos que \
 não tratam de instrumentos, pedidos ou políticas da loja): recuse com gentileza e \
@@ -121,12 +128,18 @@ def load_manual() -> str:
 
 def build_static_prompt(categories: Sequence[str]) -> str:
     """Everything that does not change between turns (cacheable prefix)."""
-    parts = [PERSONA, RULES]
+    parts = [PERSONA, RULES, _holidays_list()]
     if categories:
         listed = "\n".join(f"- {name}" for name in categories)
         parts.append(f"Categorias do catálogo da loja:\n{listed}\n")
     parts.append(f"MANUAL DE POLÍTICAS DA LOJA (fonte de verdade para regras):\n\n{load_manual()}")
     return "\n".join(parts)
+
+
+def _holidays_list() -> str:
+    listed = [f"{day:02d}/{month:02d} {name}" for month, day, name in fixed_holidays_sorted()]
+    listed.append(f"{GOOD_FRIDAY} (data móvel, dois dias antes da Páscoa)")
+    return "Feriados em que a loja fecha:\n" + "\n".join(f"- {item}" for item in listed) + "\n"
 
 
 def static_prompt_hash(categories: Sequence[str]) -> str:
@@ -141,10 +154,14 @@ def build_dynamic_block(now: datetime) -> str:
     if status.is_open:
         situation = f"ABERTA agora; fecha hoje às {status.changes_at:%H:%M}."
     else:
-        situation = f"FECHADA agora; abre {_describe_opening(now, status.changes_at)}."
+        opening = _describe_opening(now, status.changes_at)
+        today_holiday = holiday_name(now.date())
+        reason = f" (feriado: {today_holiday})" if today_holiday else ""
+        situation = f"FECHADA agora{reason}; abre {opening}."
     return (
         f"Data de referência (agora): {when}.\n"
         f"Situação da loja: {situation}\n"
+        f"{_upcoming_holidays_line(now)}"
         "Use estes dados para horário de funcionamento e prazos; "
         "não calcule datas por conta própria."
     )
@@ -152,6 +169,19 @@ def build_dynamic_block(now: datetime) -> str:
 
 def build_system_prompt(categories: Sequence[str], now: datetime) -> Message:
     return system_message(build_static_prompt(categories), build_dynamic_block(now))
+
+
+def _upcoming_holidays_line(now: datetime) -> str:
+    """Holidays from tomorrow to today + 7, one line; empty when there are none."""
+    found: list[str] = []
+    for offset in range(1, 8):
+        day: date = now.date() + timedelta(days=offset)
+        name = holiday_name(day)
+        if name is not None:
+            found.append(f"{day:%d/%m/%Y} ({WEEKDAYS[day.weekday()]}) {name}")
+    if not found:
+        return ""
+    return f"Feriados nos próximos dias (loja fechada): {'; '.join(found)}.\n"
 
 
 def _describe_opening(now: datetime, opening: datetime) -> str:
