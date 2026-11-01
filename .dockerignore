@@ -1,0 +1,25 @@
+# Only what the image needs goes into the build context.
+.git
+.gitignore
+.venv
+.env
+.env.*
+!.env.example
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.files
+.chainlit/translations
+.scratch
+.claude
+.DS_Store
+docs
+tests
+logs
+*.jsonl
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

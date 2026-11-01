@@ -18,3 +18,7 @@
 - [ ] `AGENT_NOW` em ISO 8601; sem offset = America/Campo_Grande
 - [ ] Prompt caching do Manual quando o provedor suportar
 - [ ] Testes: Data de referência e situação da loja presentes no prompt para horários representativos (dia útil aberto, sábado após 13h → abre segunda 09:00, 2026-03-22 domingo → fechada, abre segunda 09:00); `AGENT_NOW` respeitado
+
+## Comments
+
+**Do smoke test do ticket 02 (2026-10-31):** com 7 violões Yamaha e 5 mostrados, a Lia não mencionou as 2 opções restantes (US 11). O prompt deve instruir: quando `total` > itens exibidos, informar quantos existem e oferecer mostrar mais ou refinar.

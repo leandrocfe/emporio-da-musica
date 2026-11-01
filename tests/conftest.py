@@ -1,9 +1,15 @@
+import os
 from pathlib import Path
 
 import pytest
 
 from emporio.seed import seed
 from emporio.store import StoreService
+
+# Tests never touch the network: litellm must use its bundled model cost map
+# instead of downloading it at import time. conftest runs before any test
+# module imports litellm (emporio.seed/store do not import it).
+os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 

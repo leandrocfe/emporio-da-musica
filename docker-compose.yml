@@ -1,0 +1,18 @@
+services:
+  lia:
+    build: .
+    ports:
+      - "8000:8000"
+    # Create it first: cp .env.example .env (and fill in the provider key).
+    env_file: .env
+    environment:
+      # Fixed here so a stray value in .env cannot point the database at the CSVs.
+      DATA_DIR: /app/data
+      DB_PATH: /app/var/emporio.db
+    volumes:
+      # SQLite in its own directory; complaints (ticket 07) survive restarts.
+      - emporio-db:/app/var
+    restart: unless-stopped
+
+volumes:
+  emporio-db:

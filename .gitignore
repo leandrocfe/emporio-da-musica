@@ -36,3 +36,6 @@ logs/
 .idea/
 .vscode/
 .claude/settings.local.json
+
+# Chainlit copia as traduções da lib em runtime (traduções próprias entram pelo ticket 10)
+.chainlit/translations/

@@ -5,7 +5,9 @@ description = "Lia, assistente virtual de atendimento da Empório da Música"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "chainlit>=2.12.0",
-    "litellm>=1.106.6",
+    # Pinned to the patch line: LiteLLMClient relies on the private `_skip_mcp_handler`
+    # kwarg because litellm needs mcp>=2 on the tools path while Chainlit pins mcp<2.
+    "litellm>=1.106.6,<1.107",
     "tzdata>=2026.6",
 ]
 
@@ -26,6 +28,10 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers"]
+filterwarnings = [
+    # Third-party noise from litellm's pydantic models, not our code.
+    "ignore:Item 'summary' on TypedDict class 'ChatCompletionReasoningItem':UserWarning",
+]
 
 [tool.ruff]
 line-length = 100
