@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 — Lia responde no chat buscando Produtos
 
-**Status:** approved — aguardando commit
+**Status:** done — a40d54d
 
 **Executor:** builder — implementação de `EventSink` e mascaramento sobre seam pronto.
 
