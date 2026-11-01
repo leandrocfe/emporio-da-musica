@@ -21,3 +21,12 @@
 - [ ] Testes com LLM falso roteirizado: ferramenta pedida é executada com os argumentos do modelo e o resultado volta ao modelo; duas chamadas de ferramenta no mesmo turno; resposta final retornada; histórico mantido
 - [ ] Smoke test manual confirma o ID do modelo em `LLM_MODEL` contra o provedor real
 - [ ] Verificação manual: pergunta real no browser retorna Produtos do catálogo
+
+## Comments
+
+**Herdado do ticket 01 (revisão):**
+- Caminho padrão de dados assume instalação editable; no Docker, definir `DATA_DIR` e `DB_PATH` explicitamente.
+- Não montar o volume do banco sobre o diretório dos CSVs (esconderia os dados); banco em diretório próprio.
+- Query só com pontuação vira zero tokens e devolve o catálogo inteiro — decidir na camada de ferramenta (exigir ao menos um filtro ou aceitar).
+- Busca exige todos os tokens (AND): instruir o modelo a enviar só palavras-chave (sem "com", "para", "de"), ou adicionar stopwords.
+- Validação de tipos dos argumentos (`limit` não-int) fica na camada de ferramentas.
