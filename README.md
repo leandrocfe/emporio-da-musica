@@ -2,6 +2,10 @@
 
 A Lia é a assistente virtual da Empório da Música, loja de instrumentos musicais de Campo Grande/MS. Ela atende o Cliente por chat em português: busca Produtos no catálogo com preço e Disponibilidade corretos, consulta Pedidos depois da Verificação do pedido, responde dúvidas do Manual de políticas, registra Reclamações com Protocolo e recusa com gentileza o que é Fora de escopo (inclusive Acessórios, que a loja não vende).
 
+**Veja a Lia em ação (42 s):**
+
+[![Vídeo de apresentação da Lia no Vimeo](screenshots/lia-video.png)](https://vimeo.com/1242166532/9b0e059e0d)
+
 ![Página de exemplo da loja com a Lia](screenshots/emporio-da-musica.png)
 
 O vocabulário do domínio (Produto, Pedido, Verificação do pedido, Entrega prevista etc.) está em [`CONTEXT.md`](CONTEXT.md) e é usado com o mesmo sentido neste documento. O escopo completo está no [PRD](docs/PRD.md). Documentação em português, código em inglês.

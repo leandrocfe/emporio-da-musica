@@ -40,3 +40,5 @@ logs/
 # Chainlit copia as traduções da lib em runtime (traduções próprias entram pelo ticket 10)
 .chainlit/translations/*
 !.chainlit/translations/pt-BR.json
+
+video/
